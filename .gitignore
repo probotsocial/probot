@@ -1,2 +1,6 @@
 *.class
 *.log
+/src/test/resources/steveblackmon-bot-demo.conf
+/src/test/resources/probot.jks
+*.iml
+target
