@@ -1,13 +1,25 @@
 package probot
 
+import java.net.{URI, URL}
 import javax.servlet.ServletException
 
+import com.typesafe.config.Config
+import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.microservice.ResourceGroup
 import org.apache.juneau.rest.annotation.{HtmlDoc, RestResource}
 import org.apache.streams.config.StreamsConfigurator
 
 object RootResource {
-  lazy val url : String = StreamsConfigurator.getConfig().getConfig("server").getString("url")
+  lazy val url : String = asUri(StreamsConfigurator.getConfig().getConfig("server")).toString
+
+  def asUri(config : Config) : URI = {
+    val uri = new URIBuilder()
+        .setScheme(config.getString("scheme"))
+        .setHost(config.getString("host"))
+        .build()
+    uri
+  }
+
 }
 @RestResource(
   defaultRequestHeaders = Array("Accept: application/json", "Content-Type: application/json"),

@@ -1,16 +1,20 @@
 package probot
 
 
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.servlet.ServletException
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.google.common.util.concurrent.Uninterruptibles
-import org.apache.juneau.microservice.ResourceGroup
-import org.apache.juneau.rest.annotation.{HtmlDoc, RestResource}
+import org.apache.http.HttpResponse
+import org.apache.juneau.ObjectMap
+import org.apache.juneau.microservice.{Resource, ResourceGroup}
+import org.apache.juneau.rest.{RestRequest, RestResponse}
+import org.apache.juneau.rest.annotation.{HtmlDoc, RestMethod, RestResource}
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfiguration, StreamsConfigurator}
 import org.apache.streams.twitter.{TwitterConfiguration, TwitterTimelineProviderConfiguration}
-import org.apache.streams.twitter.api.{AccountSettings, Twitter}
+import org.apache.streams.twitter.api.{AccountSettings, Twitter, TwitterSecurity}
 import org.apache.streams.twitter.pojo.{Tweet, User}
 import org.apache.streams.twitter.provider.TwitterTimelineProvider
 
@@ -20,6 +24,7 @@ object TwitterResource {
   lazy val streamsConfiguration: StreamsConfiguration = StreamsConfigurator.detectConfiguration()
   lazy val twitterConfiguration: TwitterConfiguration = new ComponentConfigurator(classOf[TwitterConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
   lazy val twitter: org.apache.streams.twitter.api.Twitter = Twitter.getInstance(twitterConfiguration)
+  lazy val twitterSecurity: org.apache.streams.twitter.api.TwitterSecurity = new TwitterSecurity
 
   lazy val timelineConfiguration: TwitterTimelineProviderConfiguration = new ComponentConfigurator(classOf[TwitterTimelineProviderConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
 
@@ -52,7 +57,7 @@ object TwitterResource {
 }
 
 @RestResource(
-  defaultRequestHeaders = Array("Accept: application/json", "Content-Type: application/json"),
+  //  defaultRequestHeaders = Array("Accept: application/json", "Content-Type: application/json"),
   //  defaultResponseHeaders = Array("Content-Type: application/json"),
   htmldoc=new HtmlDoc(
     aside=""
@@ -70,10 +75,11 @@ object TwitterResource {
   description = "probot.Twitter"
   ,
   children = Array(
-    classOf[probot.WebhookResource]
+    classOf[probot.WebhookResource],
+    classOf[probot.TopHashtags]
   )
 )
-class TwitterResource extends ResourceGroup {
+class TwitterResource extends Resource {
   import TwitterResource._
 
   @throws[ServletException]
@@ -81,5 +87,20 @@ class TwitterResource extends ResourceGroup {
     this.log("init")
   }
 
+  @RestMethod(name = "GET")
+  @throws[IOException]
+  def get(req: RestRequest,
+          res: RestResponse) = {
 
+    val objectMap = new ObjectMap()
+      .append("streamsConfiguration", streamsConfiguration)
+      .append("twitterConfiguration", twitterConfiguration)
+      .append("timelineConfiguration", timelineConfiguration)
+      .append("user", user)
+      .append("timeline", timeline.size)
+
+    res.setOutput(objectMap)
+    res.setStatus(200)
+
+  }
 }

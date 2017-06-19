@@ -4,6 +4,7 @@ import java.io.IOException
 import javax.servlet.ServletException
 import javax.ws.rs.core.Response
 
+import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.ObjectMap
 import org.apache.juneau.json.JsonParser
 import org.apache.juneau.microservice.Resource
@@ -11,65 +12,91 @@ import org.apache.juneau.rest.annotation.{Body, Header, HtmlDoc, Query, RestMeth
 import org.apache.juneau.rest.{RestRequest, RestResponse}
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
 import org.apache.streams.twitter.TwitterOAuthConfiguration
-import org.apache.streams.twitter.api.{TwitterOAuthRequestInterceptor, Webhook, WelcomeMessageNewRequest, WelcomeMessageNewRequestWrapper, WelcomeMessageNewRuleRequest, WelcomeMessageNewRuleRequestWrapper, WelcomeMessageRulesListRequest, WelcomeMessagesListRequest}
+import org.apache.streams.twitter.api.{TwitterOAuthRequestInterceptor, TwitterSecurity, Webhook, WelcomeMessageNewRequest, WelcomeMessageNewRequestWrapper, WelcomeMessageNewRuleRequest, WelcomeMessageNewRuleRequestWrapper, WelcomeMessageRulesListRequest, WelcomeMessagesListRequest}
 import org.apache.streams.twitter.pojo.{MessageData, WebhookEvents, WelcomeMessage, WelcomeMessageRule}
+
 import probot.TwitterResource.twitter
 
 import scala.collection.JavaConversions._
 import scala.util.Try
 
 object WebhookResource {
+
+	lazy val url : String = new URIBuilder(RootResource.asUri(StreamsConfigurator.getConfig().getConfig("server")))
+		.setPath("/twitter/webhook").toString
+
 	lazy val consumerSecret = new ComponentConfigurator(classOf[TwitterOAuthConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter").getConfig("oauth")).getConsumerSecret;
-	lazy val webhookUrl = StreamsConfigurator.getConfig.getString("webhook")
 	lazy val welcomeMessage = StreamsConfigurator.getConfig.getString("welcome_message");
 
-	lazy val webhook : Webhook = {
+	lazy val webhook : Webhook = initWebhook
+	lazy val message : WelcomeMessage = initWelcomeMessage
+	lazy val rule : WelcomeMessageRule = initWelcomeMessageRule
+	lazy val subscribed : Boolean = initSubscribed
+
+	def initWebhook = {
 		val webhooks = twitter.getWebhooks
 		webhooks.foreach((webhook : Webhook) => println(webhook))
 		// TODO: clean up
 		// need deletes to be working
-		val activeWebhook : Option[Webhook] = Try(webhooks.filter(_.getUrl.eq(webhookUrl)).get(0)).toOption
+		val activeWebhook : Option[Webhook] = Try(webhooks.filter(_.getUrl.eq(url)).get(0)).toOption
 		// update to match conf
 		if( activeWebhook.isEmpty ) {
-			twitter.registerWebhook(webhookUrl)
+			if( webhooks.size > 0 ) {
+				webhooks.foreach((webhook : Webhook) => twitter.deleteWebhook(webhook.getId.toLong))
+			}
+			twitter.registerWebhook(url)
 		} else {
 			activeWebhook.get
 		}
 	}
-	lazy val message : WelcomeMessage = {
+	def initWelcomeMessage = {
 		val messages = twitter.listWelcomeMessages(new WelcomeMessagesListRequest()).getWelcomeMessages
-		messages.foreach((message : WelcomeMessage) => println(message))
 		var activeMessage: Option[WelcomeMessage] = Try(messages.filter(_.getMessageData.getText.eq(welcomeMessage)).get(0)).toOption
 		// update to match conf
 		if( activeMessage.isEmpty ) {
-			twitter.newWelcomeMessage(new WelcomeMessageNewRequest()
-				.withWelcomeMessage(new WelcomeMessageNewRequestWrapper()
-					.withMessageData(new MessageData()
-						.withText(welcomeMessage)
+			if( messages.size > 0 ) {
+				messages.foreach((message : WelcomeMessage) => twitter.destroyWelcomeMessage(message.getId.toLong))
+			}
+			def newWelcomeMessage = {
+				new WelcomeMessageNewRequest()
+					.withWelcomeMessage(new WelcomeMessageNewRequestWrapper()
+						.withMessageData(new MessageData()
+							.withText(welcomeMessage)
+						)
 					)
-				)
-			).getWelcomeMessage
+			}
+			twitter.newWelcomeMessage(newWelcomeMessage).getWelcomeMessage
 		} else {
 			activeMessage.get
 		}
 	}
-	lazy val rule : WelcomeMessageRule = {
+	def initWelcomeMessageRule = {
 		val rules = twitter.listWelcomeMessageRules(new WelcomeMessageRulesListRequest()).getWelcomeMessageRules
 		// compare to conf
 		rules.foreach((rule : WelcomeMessageRule) => println(rule))
 		// update to match conf
 		var activeRule: Option[WelcomeMessageRule] = Try(rules.get(0)).toOption
 		if( activeRule.isEmpty ) {
-			twitter.newWelcomeMessageRule(message.getId.toLong)
+			if( rules.size > 0 ) {
+				rules.foreach((rule : WelcomeMessageRule) => twitter.destroyWelcomeMessageRule(rule.getId.toLong))
+			}
+			def newWelcomeMessageRule = {
+				new WelcomeMessageNewRuleRequest()
+					.withWelcomeMessageRule(new WelcomeMessageNewRuleRequestWrapper()
+						.withWelcomeMessageId(message.getId)
+					)
+			}
+			twitter.newWelcomeMessageRule(newWelcomeMessageRule)
 		} else {
 			activeRule.get
 		}
 	}
-	lazy val subscribed : Boolean = {
-		val activeSubscription = twitter.getWebhookSubscription(webhook.getId)
-		// update to match conf
+	def initSubscribed : Boolean = {
+		val errors = twitter.getWebhookSubscription(webhook.getId.toLong)
+		val activeSubscription = (errors == null)
 		if( !activeSubscription ) {
-			twitter.registerWebhookSubscriptions(webhook.getId)
+			val errors = twitter.registerWebhookSubscriptions(webhook.getId.toLong)
+			errors != null
 		} else {
 			activeSubscription
 		}
@@ -107,17 +134,39 @@ class WebhookResource extends Resource {
 	}
 
 	def computeCRC(crc_token: String): String = {
-		"sha256="+TwitterOAuthRequestInterceptor.computeSignature(crc_token, consumerSecret)
+		"sha256="+twitterSecurity.computeAndEncodeSignature(crc_token, consumerSecret, TwitterSecurity.webhook_signature_method)
+	}
+
+	def doCrc(crc_token: String): ObjectMap = {
+		var objectMap = new ObjectMap()
+		val hash: String = computeCRC(crc_token)
+		assert(hash.startsWith("sha256"))
+		objectMap.append("response_token", hash)
+	}
+
+	def info(): ObjectMap = {
+		new ObjectMap()
+			.append("url", url)
+			.append("welcomeMessage", welcomeMessage)
+			.append("webhook", webhook)
+			.append("message", message)
+			.append("rule", rule)
+			.append("subscribed", subscribed)
 	}
 
 	@RestMethod(name = "GET")
 	@throws[IOException]
 	def get(req: RestRequest,
 					res: RestResponse,
+					@Header("X-Twitter-Webhooks-Signature") signature : String,
 					@Query("crc_token") crc_token: String) = {
-		val hash: String = computeCRC(crc_token)
-		assert(hash.startsWith("sha256"))
-		val response: ObjectMap = new ObjectMap().append("response_token", hash)
+		val response: ObjectMap = {
+			if( crc_token != null && !crc_token.isEmpty ) {
+				doCrc(crc_token)
+			} else {
+				info()
+			}
+		}
 		res.setOutput(response)
 		res.setStatus(Response.Status.OK.getStatusCode)
 	}
@@ -128,10 +177,12 @@ class WebhookResource extends Resource {
 					 res: RestResponse,
 					 @Header("X-Twitter-Webhooks-Signature") signature : String) = {
 		val hash: String = computeCRC(req.getBody.asString())
-		assert(signature.startsWith("sha256"))
-		if(!signature.equals(hash)) {
-			res.setStatus(Response.Status.BAD_REQUEST.getStatusCode)
-		} else {
+//		assert(hash.startsWith("sha256"))
+//		assert(signature.startsWith("sha256"))
+//		assert(hash.equals(signature))
+//		if(!signature.equals(hash)) {
+//			res.setStatus(Response.Status.BAD_REQUEST.getStatusCode)
+//		} else {
 			val webhookEvents = Try(JsonParser.DEFAULT.parse(req.getBody.asString(), classOf[WebhookEvents])).toOption
 			webhookEvents match {
 				case Some(events : WebhookEvents) => {
@@ -144,6 +195,6 @@ class WebhookResource extends Resource {
 					res.setStatus(Response.Status.BAD_REQUEST.getStatusCode)
 				}
 			}
-		}
+//		}
 	}
 }

@@ -46,7 +46,7 @@
         <scala.suffix>2.10</scala.suffix>
 
         <jena.version>2.13.0</jena.version>
-        <juneau.version>6.2.1-incubating-SNAPSHOT</juneau.version>
+        <juneau.version>6.3.0-incubating</juneau.version>
         <streams.version>0.5.1-incubating-SNAPSHOT</streams.version>
 
         <junit.version>4.11</junit.version>
