@@ -44,14 +44,25 @@ class DirectMessageEventConsumer(val event : DirectMessageEvent) extends Runnabl
       Right(new NotPingEvent)
   }
 
-  case class ListEvent(field : String)
+  abstract class ListEvent(val field: String)
+
   case class NotListEvent()
 
+  case class TopDomainsEvent() extends ListEvent("domains")
+  case class TopHashtagsEvent() extends ListEvent("hashtags")
+  case class TopMentionsEvent() extends ListEvent("mentions")
+
   def isList(event : DirectMessageEvent) : Either[ListEvent,NotListEvent] = {
-    val listKeywords = List("list", "top", "rank", "best")
-    if( listKeywords.exists(event.getMessageCreate.getMessageData.getText.contains)) {
+    val superlativeKeywords = List("list", "top", "rank", "best")
+    val domainKeywords = List("domain", "site", "web")
+    val mentionKeywords = List("mention", "friend")
+    if( superlativeKeywords.exists(event.getMessageCreate.getMessageData.getText.contains)) {
       if( event.getMessageCreate.getMessageData.getText.contains("hashtag") ) {
-        return Left(new ListEvent("hashtags"))
+        return Left(new TopHashtagsEvent)
+      } else if( domainKeywords.exists(event.getMessageCreate.getMessageData.getText.contains )) {
+        return Left(new TopDomainsEvent)
+      } else if( mentionKeywords.exists(event.getMessageCreate.getMessageData.getText.contains )) {
+        return Left(new TopMentionsEvent)
       }
     }
     Right(new NotListEvent)
@@ -82,10 +93,11 @@ class DirectMessageEventConsumer(val event : DirectMessageEvent) extends Runnabl
   }
 
   def listURL(event: ListEvent): URL = {
-    new URL(TopHashtags.url.toString)
-//    if( event.field.contains("hashtags")) {
-//
-//    }
+    event.field match {
+      case "domains" => new URL(TopDomains.url.toString)
+      case "hashtags" => new URL(TopHashtags.url.toString)
+      case "mentions" => new URL(TopMentions.url.toString)
+    }
   }
 
   def processList(event: ListEvent) = {

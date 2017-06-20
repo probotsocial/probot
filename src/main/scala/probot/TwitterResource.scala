@@ -72,11 +72,12 @@ object TwitterResource {
   ),
   path = "/twitter",
   title = "probot.Twitter",
-  description = "probot.Twitter"
-  ,
+  description = "probot.Twitter",
   children = Array(
-    classOf[probot.WebhookResource],
-    classOf[probot.TopHashtags]
+    classOf[probot.TopDomains],
+    classOf[probot.TopHashtags],
+    classOf[probot.TopMentions],
+    classOf[probot.WebhookResource]
   )
 )
 class TwitterResource extends Resource {
