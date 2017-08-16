@@ -2,97 +2,127 @@ package probot
 
 import java.net.URL
 
-import org.apache.http.client.utils.URIBuilder
-import org.apache.streams.twitter.Url
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import org.apache.streams.twitter.api.MessageCreateRequest
-import org.apache.streams.twitter.pojo.{DirectMessageEvent, Entities, MessageCreate, MessageData, Target, WebhookEvents}
+import org.apache.streams.twitter.pojo.{DirectMessageEvent, MessageCreate, MessageData, Target}
 
-import scala.collection.JavaConverters._
+object DirectMessageEventConsumer {
 
-class DirectMessageEventConsumer(val event : DirectMessageEvent) extends Runnable {
-
-  import TwitterResource._
-
-  case class HelloEvent()
-  case class NotHelloEvent()
-
-  def isHello(event : DirectMessageEvent) : Either[HelloEvent,NotHelloEvent] = {
-    if( event.getMessageCreate.getMessageData.getText.contains("hello"))
-      Left(new HelloEvent)
-    else
-      Right(new NotHelloEvent)
+  case class HelloEvent() extends DirectMessageEvent
+  object HelloEvent {
+    def unapply(event: DirectMessageEvent) = {
+      if( event.getMessageCreate.getMessageData.getText.equals("hello") )
+        Some(new HelloEvent())
+      else None
+    }
   }
 
-  case class EchoEvent(text : String)
-  case class NotEchoEvent()
+  case class PingEvent() extends DirectMessageEvent
+  object PingEvent {
+    def unapply(event: DirectMessageEvent) = {
+      if( event.getMessageCreate.getMessageData.getText.equals("ping") )
+        Some(new PingEvent())
+      else None
+    }
+  }
 
-  def isEcho(event : DirectMessageEvent) : Either[EchoEvent, NotEchoEvent] = {
+  case class EchoEvent(val text : String) extends DirectMessageEvent
+  object EchoEvent {
     val echoKeywords = List("foo", "bar")
-    if( echoKeywords.contains(event.getMessageCreate.getMessageData.getText))
-      Left(new EchoEvent(event.getMessageCreate.getMessageData.getText))
-    else
-      Right(new NotEchoEvent)
+    def unapply(event: DirectMessageEvent) = {
+      if( echoKeywords.contains(event.getMessageCreate.getMessageData.getText)) {
+        Some(new EchoEvent(event.getMessageCreate.getMessageData.getText))
+      }
+      else None
+    }
   }
 
-  case class PingEvent()
-  case class NotPingEvent()
-
-  def isPing(event : DirectMessageEvent) : Either[PingEvent,NotPingEvent] = {
-    if( event.getMessageCreate.getMessageData.getText.equals("ping") )
-      Left(new PingEvent)
-    else
-      Right(new NotPingEvent)
-  }
-
-  abstract class ListEvent(val field: String)
-
-  case class NotListEvent()
-
-  case class TopDomainsEvent() extends ListEvent("domains")
-  case class TopHashtagsEvent() extends ListEvent("hashtags")
-  case class TopMentionsEvent() extends ListEvent("mentions")
-
-  def isList(event : DirectMessageEvent) : Either[ListEvent,NotListEvent] = {
+  case class RankEvent(val field: String) extends DirectMessageEvent
+  object RankEvent {
     val superlativeKeywords = List("list", "top", "rank", "best")
     val domainKeywords = List("domain", "site", "web")
     val mentionKeywords = List("mention", "friend")
-    if( superlativeKeywords.exists(event.getMessageCreate.getMessageData.getText.contains)) {
-      if( event.getMessageCreate.getMessageData.getText.contains("hashtag") ) {
-        return Left(new TopHashtagsEvent)
-      } else if( domainKeywords.exists(event.getMessageCreate.getMessageData.getText.contains )) {
-        return Left(new TopDomainsEvent)
-      } else if( mentionKeywords.exists(event.getMessageCreate.getMessageData.getText.contains )) {
-        return Left(new TopMentionsEvent)
+    def unapply(event: DirectMessageEvent): Option[RankEvent] = {
+      if( superlativeKeywords.exists(event.getMessageCreate.getMessageData.getText.contains)) {
+        if( event.getMessageCreate.getMessageData.getText.contains("hashtag") ) {
+          return Some(new RankEvent("hashtags"))
+        } else if( domainKeywords.exists(event.getMessageCreate.getMessageData.getText.contains )) {
+          return Some(new RankEvent("domains"))
+        } else if ( mentionKeywords.exists(event.getMessageCreate.getMessageData.getText.contains )) {
+          return Some(new RankEvent("mentions"))
+        }
       }
+      None
     }
-    Right(new NotListEvent)
   }
 
-  def processHello(event : HelloEvent) = {
-    sendText("hello!")
-  }
+}
 
-  def processPing(event: PingEvent) = {
-    sendText(pingResponse())
-  }
+class DirectMessageEventConsumer extends Actor with ActorLogging {
 
-  def processEcho(event: EchoEvent) = {
-    sendText(event.text)
-  }
+  import DirectMessageEventConsumer._
+  import TwitterResource._
 
-  def sendUrl(text: String, url: URL) = {
-    val out = new MessageCreateRequest()
+  override def preStart(): Unit = log.info("DirectMessageEventConsumer actor started")
+  override def postStop(): Unit = log.info("DirectMessageEventConsumer actor stopped")
+
+  lazy val messageCreateRequestConsumer: ActorRef = context.actorOf(Props[MessageCreateRequestConsumer])
+
+  def processMessageData(messageData: MessageData, sendTo: String, sendAs: String = TwitterResource.user.getIdStr) = {
+    val messageCreateRequest = new MessageCreateRequest()
       .withEvent(new DirectMessageEvent()
         .withMessageCreate(new MessageCreate()
-          .withMessageData(new MessageData()
-            .withText(text + ": " + url.toString))
+          .withMessageData(messageData)
           .withTarget(new Target()
-            .withRecipientId(event.getMessageCreate.getSenderId))
-          .withSenderId(TwitterResource.user.getIdStr)))
-    TwitterResource.twitter.newEvent(out)
+            .withRecipientId(sendTo))
+          .withSenderId(sendAs)
+        )
+      )
+    messageCreateRequestConsumer ! messageCreateRequest
   }
 
-  def listURL(event: ListEvent): URL = {
+
+  override def receive: Receive = {
+    case event: DirectMessageEvent => {
+      val senderId = event.getMessageCreate.getSenderId
+      val recipientId = event.getMessageCreate.getTarget.getRecipientId
+      if (recipientId.equals(user.getIdStr)) {
+        processMessageData(response(classify(event)), senderId, recipientId)
+      }
+    }
+  }
+
+  def classify(event : DirectMessageEvent) : DirectMessageEvent =
+    event match {
+      case HelloEvent(hello) => hello
+      case PingEvent(ping) => ping
+      case EchoEvent(echo) => echo
+      case RankEvent(rank) => rank
+      case _ : DirectMessageEvent => event
+    }
+
+  def response(event : DirectMessageEvent) =
+    event match {
+      case hello : HelloEvent => respondTo(hello)
+      case ping : PingEvent => respondTo(ping)
+      case echo : EchoEvent => respondTo(echo)
+      case rank : RankEvent => respondTo(rank)
+      case _ : DirectMessageEvent => respondSorry
+    }
+
+  def respondTo(event : HelloEvent) : MessageData = {
+    response(text = "hello!")
+  }
+
+  def respondTo(event: PingEvent) : MessageData = {
+    response(text = pingResponse())
+  }
+
+  def respondTo(event: EchoEvent) : MessageData = {
+    response(text = event.text)
+  }
+
+  def listURL(event: RankEvent): URL = {
     event.field match {
       case "domains" => new URL(TopDomains.url.toString)
       case "hashtags" => new URL(TopHashtags.url.toString)
@@ -100,73 +130,22 @@ class DirectMessageEventConsumer(val event : DirectMessageEvent) extends Runnabl
     }
   }
 
-  def processList(event: ListEvent) = {
-    sendUrl("Here's a list of my top "+event.field, listURL(event))
+  def respondTo(event: RankEvent) : MessageData = {
+    response("Here's a list of my top "+event.field, Some(listURL(event)))
   }
 
-  def processSorry(event: DirectMessageEvent) = {
-    sendText("sorry")
+  def respondSorry() : MessageData = {
+    response("sorry")
   }
 
   def pingResponse() : String = {
     "pong"
   }
 
-  def sendText(text : String) = {
-    val out = new MessageCreateRequest()
-        .withEvent(new DirectMessageEvent()
-          .withMessageCreate(new MessageCreate()
-        .withMessageData(new MessageData()
-          .withText(text))
-        .withTarget(new Target()
-          .withRecipientId(event.getMessageCreate.getSenderId))
-        .withSenderId(TwitterResource.user.getIdStr)))
-    TwitterResource.twitter.newEvent(out)
+  def response(text: String, url : Option[URL] = None ): MessageData = {
+    new MessageData()
+      .withText(text + {if (url.isDefined) {" " + url.toString}})
   }
 
-  override def run(): Unit = {
-
-    if( event.getMessageCreate.getTarget.getRecipientId.equals(user.getIdStr)) {
-      // classify event
-      isHello(event) match {
-        case Left(x: HelloEvent) => {
-          processHello(x)
-          return
-        }
-        case Right(x: NotHelloEvent) => {
-
-        }
-      }
-      isPing(event) match {
-        case Left(x: PingEvent) => {
-          processPing(x)
-          return
-        }
-        case Right(x: NotPingEvent) => {
-
-        }
-      }
-      isEcho(event) match {
-        case Left(x: EchoEvent) => {
-          processEcho(x)
-          return
-        }
-        case Right(x: NotEchoEvent) => {
-
-        }
-      }
-      isList(event) match {
-        case Left(x: ListEvent) => {
-          processList(x)
-          return
-        }
-        case Right(x: NotListEvent) => {
-
-        }
-      }
-      processSorry(event)
-    }
-
-  }
 }
 

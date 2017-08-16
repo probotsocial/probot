@@ -23,15 +23,9 @@ object TopHashtags {
   defaultRequestHeaders = Array("Accept: text/html"),
   defaultResponseHeaders = Array("Content-Type: text/html"),
   htmldoc=new HtmlDoc(
-    aside=""
-      + "<div style='max-width:400px;min-width:200px'>"
-      + "Probot.TopHashtags"
-      + "</div>",
-    nav="probot > Twitter > TopHashtags",
-    title="Probot.TopHashtags",
-    description="Probot.TopHashtags",
-    header="Probot.TopHashtags",
-    footer="ASF 2.0 License"
+    header=Array("Probot > Twitter > TopHashtags"),
+    links=Array("options: '?method=OPTIONS'"),
+    footer=Array("ASF 2.0 License")
   ),
   path = "/top_hashtags",
   title = "probot.TopHashtags",

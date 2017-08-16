@@ -2,19 +2,21 @@ package probot
 
 import java.io.IOException
 import javax.servlet.ServletException
+import javax.servlet.http.HttpServletResponse
+import javax.ws.rs.HttpMethod
 import javax.ws.rs.core.Response
 
+import akka.actor.{ActorRef, Props}
 import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.ObjectMap
 import org.apache.juneau.json.JsonParser
 import org.apache.juneau.microservice.Resource
 import org.apache.juneau.rest.annotation.{Body, Header, HtmlDoc, Query, RestMethod, RestResource}
-import org.apache.juneau.rest.{RestRequest, RestResponse}
+import org.apache.juneau.rest.{RestException, RestRequest, RestResponse}
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
 import org.apache.streams.twitter.TwitterOAuthConfiguration
 import org.apache.streams.twitter.api.{TwitterOAuthRequestInterceptor, TwitterSecurity, Webhook, WelcomeMessageNewRequest, WelcomeMessageNewRequestWrapper, WelcomeMessageNewRuleRequest, WelcomeMessageNewRuleRequestWrapper, WelcomeMessageRulesListRequest, WelcomeMessagesListRequest}
 import org.apache.streams.twitter.pojo.{MessageData, WebhookEvents, WelcomeMessage, WelcomeMessageRule}
-
 import probot.TwitterResource.twitter
 
 import scala.collection.JavaConversions._
@@ -32,6 +34,8 @@ object WebhookResource {
 	lazy val message : WelcomeMessage = initWelcomeMessage
 	lazy val rule : WelcomeMessageRule = initWelcomeMessageRule
 	lazy val subscribed : Boolean = initSubscribed
+
+	lazy val webhookEventsConsumer: ActorRef = RootResource.system.actorOf(Props[WebhookEventsConsumer])
 
 	def initWebhook = {
 		val webhooks = twitter.getWebhooks
@@ -107,21 +111,15 @@ object WebhookResource {
 	defaultRequestHeaders = Array("Accept: application/json", "Content-Type: application/json"),
 	//  defaultResponseHeaders = Array("Content-Type: application/json"),
 	htmldoc=new HtmlDoc(
-		aside=""
-			+ "<div style='max-width:400px;min-width:200px'>"
-			+ "Probot.Webhook"
-			+ "</div>",
-		nav="probot > Twitter > Webhook",
-		title="Probot.Webhook",
-		description="Probot.Webhook",
-		header="Probot.Webhook",
-		footer="ASF 2.0 License"
+		header=Array("Probot > Webhook"),
+		links=Array("options: '?method=OPTIONS'"),
+		footer=Array("ASF 2.0 License")
 	),
 	path = "/webhook",
 	title = "probot.Webhook",
 	description = "probot.Webhook"
 )
-class WebhookResource extends Resource {
+class WebhookResource extends ProbotResource {
 
 	import TwitterResource._
 	import WebhookResource._
@@ -188,7 +186,7 @@ class WebhookResource extends Resource {
 				case Some(events : WebhookEvents) => {
 					res.setStatus(Response.Status.OK.getStatusCode)
 					res.setOutput(Response.Status.OK)
-					global.execute(new WebhookEventsConsumer(events))
+					webhookEventsConsumer ! events
 				}
 				case None => {
 					res.setOutput(Response.Status.BAD_REQUEST)
@@ -196,5 +194,10 @@ class WebhookResource extends Resource {
 				}
 			}
 //		}
+	}
+
+	@throws[RestException]
+	override def onPostCall(req: RestRequest, res: RestResponse) {
+		super.onPostCall(req, res)
 	}
 }

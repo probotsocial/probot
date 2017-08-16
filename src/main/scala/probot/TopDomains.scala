@@ -7,10 +7,12 @@ import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.microservice.Resource
 import org.apache.juneau.rest.RestRequest
 import org.apache.juneau.rest.annotation.{HtmlDoc, RestMethod, RestResource}
+import org.apache.juneau.rest.widget.QueryMenuItem
 import org.apache.streams.config.StreamsConfigurator
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
+
 import scala.util.Try
 
 object TopDomains {
@@ -26,15 +28,9 @@ object TopDomains {
   defaultRequestHeaders = Array("Accept: text/html"),
   defaultResponseHeaders = Array("Content-Type: text/html"),
   htmldoc=new HtmlDoc(
-    aside=""
-      + "<div style='max-width:400px;min-width:200px'>"
-      + "Probot.TopDomains"
-      + "</div>",
-    nav="probot > Twitter > TopDomains",
-    title="Probot.TopDomains",
-    description="Probot.TopDomains",
-    header="Probot.TopDomains",
-    footer="ASF 2.0 License"
+    header=Array("Probot > Twitter > TopDomains"),
+    links=Array("options: '?method=OPTIONS'"),
+    footer=Array("ASF 2.0 License")
   ),
   path = "/top_domains",
   title = "probot.TopDomains",

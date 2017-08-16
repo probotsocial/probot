@@ -9,6 +9,7 @@ import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.microservice.Resource
 import org.apache.juneau.rest.RestRequest
 import org.apache.juneau.rest.annotation.{HtmlDoc, Properties, Property, RestMethod, RestResource}
+import org.apache.juneau.rest.widget.QueryMenuItem
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
 import org.apache.streams.twitter.{TwitterTimelineProviderConfiguration, TwitterUserInformationConfiguration}
 import org.apache.streams.twitter.api.UsersLookupRequest
@@ -56,15 +57,9 @@ object TopMentions {
   defaultRequestHeaders = Array("Accept: text/html"),
   defaultResponseHeaders = Array("Content-Type: text/html"),
   htmldoc=new HtmlDoc(
-    aside=""
-      + "<div style='max-width:400px;min-width:200px'>"
-      + "Probot.TopDomains"
-      + "</div>",
-    nav="probot > Twitter > TopMentions",
-    title="Probot.TopMentions",
-    description="Probot.TopMentions",
-    header="Probot.TopMentions",
-    footer="ASF 2.0 License"
+    header=Array("Probot > Twitter > TopMentions"),
+    links=Array("options: '?method=OPTIONS'"),
+    footer=Array("ASF 2.0 License")
   ),
   path = "/top_mentions",
   title = "probot.TopMentions",
