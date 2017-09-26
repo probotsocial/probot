@@ -24,16 +24,16 @@ import scala.util.Try
 
 object WebhookResource {
 
-	lazy val url : String = new URIBuilder(RootResource.asUri(StreamsConfigurator.getConfig().getConfig("server")))
+	val url : String = new URIBuilder(RootResource.asUri(StreamsConfigurator.getConfig().getConfig("server")))
 		.setPath("/twitter/webhook").toString
 
-	lazy val consumerSecret = new ComponentConfigurator(classOf[TwitterOAuthConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter").getConfig("oauth")).getConsumerSecret;
-	lazy val welcomeMessage = StreamsConfigurator.getConfig.getString("welcome_message");
+	val consumerSecret = new ComponentConfigurator(classOf[TwitterOAuthConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter").getConfig("oauth")).getConsumerSecret;
+	val welcomeMessage = StreamsConfigurator.getConfig.getString("welcome_message");
 
 	lazy val webhook : Webhook = initWebhook
 	lazy val message : WelcomeMessage = initWelcomeMessage
 	lazy val rule : WelcomeMessageRule = initWelcomeMessageRule
-	lazy val subscribed : Boolean = initSubscribed
+	var subscribed : Boolean = false
 
 	lazy val webhookEventsConsumer: ActorRef = RootResource.system.actorOf(Props[WebhookEventsConsumer])
 
@@ -96,11 +96,10 @@ object WebhookResource {
 		}
 	}
 	def initSubscribed : Boolean = {
-		val errors = twitter.getWebhookSubscription(webhook.getId.toLong)
-		val activeSubscription = (errors == null)
+		val activeSubscription = twitter.getWebhookSubscription(webhook.getId.toLong)
 		if( !activeSubscription ) {
-			val errors = twitter.registerWebhookSubscriptions(webhook.getId.toLong)
-			errors != null
+			val nowSubscribed = twitter.registerWebhookSubscriptions(webhook.getId.toLong)
+			nowSubscribed
 		} else {
 			activeSubscription
 		}
@@ -119,20 +118,14 @@ object WebhookResource {
 	title = "probot.Webhook",
 	description = "probot.Webhook"
 )
-class WebhookResource extends ProbotResource {
+class WebhookResource extends Resource {
 
-	import TwitterResource._
 	import WebhookResource._
 
 	import scala.concurrent.ExecutionContext.Implicits.global
 
-	@throws[ServletException]
-	override def init(): Unit = {
-		this.log("init")
-	}
-
 	def computeCRC(crc_token: String): String = {
-		"sha256="+twitterSecurity.computeAndEncodeSignature(crc_token, consumerSecret, TwitterSecurity.webhook_signature_method)
+		"sha256="+TwitterResource.twitterSecurity.computeAndEncodeSignature(crc_token, consumerSecret, TwitterSecurity.webhook_signature_method)
 	}
 
 	def doCrc(crc_token: String): ObjectMap = {
@@ -143,13 +136,15 @@ class WebhookResource extends ProbotResource {
 	}
 
 	def info(): ObjectMap = {
-		new ObjectMap()
+		var info = new ObjectMap()
 			.append("url", url)
 			.append("welcomeMessage", welcomeMessage)
 			.append("webhook", webhook)
 			.append("message", message)
 			.append("rule", rule)
-			.append("subscribed", subscribed)
+		if( !subscribed ) subscribed = initSubscribed
+		info = info.append("subscribed", subscribed)
+		info
 	}
 
 	@RestMethod(name = "GET")
@@ -172,32 +167,20 @@ class WebhookResource extends ProbotResource {
 	@RestMethod(name = "POST")
 	@throws[IOException]
 	def post(req: RestRequest,
-					 res: RestResponse,
-					 @Header("X-Twitter-Webhooks-Signature") signature : String) = {
+					 res: RestResponse) = {
 		val hash: String = computeCRC(req.getBody.asString())
-//		assert(hash.startsWith("sha256"))
-//		assert(signature.startsWith("sha256"))
-//		assert(hash.equals(signature))
-//		if(!signature.equals(hash)) {
-//			res.setStatus(Response.Status.BAD_REQUEST.getStatusCode)
-//		} else {
-			val webhookEvents = Try(JsonParser.DEFAULT.parse(req.getBody.asString(), classOf[WebhookEvents])).toOption
-			webhookEvents match {
-				case Some(events : WebhookEvents) => {
-					res.setStatus(Response.Status.OK.getStatusCode)
-					res.setOutput(Response.Status.OK)
-					webhookEventsConsumer ! events
-				}
-				case None => {
-					res.setOutput(Response.Status.BAD_REQUEST)
-					res.setStatus(Response.Status.BAD_REQUEST.getStatusCode)
-				}
+		val webhookEvents = Try(JsonParser.DEFAULT.parse(req.getBody.asString(), classOf[WebhookEvents])).toOption
+		webhookEvents match {
+			case Some(events : WebhookEvents) => {
+				res.setStatus(Response.Status.OK.getStatusCode)
+				res.setOutput(Response.Status.OK)
+				webhookEventsConsumer ! events
 			}
-//		}
+			case None => {
+				res.setOutput(Response.Status.BAD_REQUEST)
+				res.setStatus(Response.Status.BAD_REQUEST.getStatusCode)
+			}
+		}
 	}
 
-	@throws[RestException]
-	override def onPostCall(req: RestRequest, res: RestResponse) {
-		super.onPostCall(req, res)
-	}
 }

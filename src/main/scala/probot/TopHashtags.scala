@@ -15,8 +15,11 @@ import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 object TopHashtags {
+
+  val hashtagEntityKeywords = List("hashtag")
+
   lazy val url : String = new URIBuilder(RootResource.asUri(StreamsConfigurator.getConfig().getConfig("server")))
-    .setPath("/twitter/top_hashtags").toString
+    .setPath("/twitter/TopHashtags").toString
 }
 
 @RestResource(
@@ -27,7 +30,7 @@ object TopHashtags {
     links=Array("options: '?method=OPTIONS'"),
     footer=Array("ASF 2.0 License")
   ),
-  path = "/top_hashtags",
+  path = "/TopHashtags",
   title = "probot.TopHashtags",
   description = "probot.TopHashtags"
 )

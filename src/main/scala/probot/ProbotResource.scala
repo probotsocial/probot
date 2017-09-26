@@ -6,6 +6,7 @@ import java.util.logging.Level
 import org.apache.commons.lang3.StringUtils
 import org.apache.juneau.json.JsonSerializerBuilder
 import org.apache.juneau.microservice.Resource
+import org.apache.juneau.rest.annotation.{HookEvent, RestHook}
 import org.apache.juneau.rest.{RestRequest, RestResponse}
 import org.apache.streams.pojo.json.Activity
 import org.apache.streams.pojo.json.objectTypes.Application
@@ -33,8 +34,9 @@ class ProbotResource extends Resource {
 
   import ProbotResource._
 
-  override def onPreCall(req : RestRequest) = {
-    var xrequestid: String = req.getHeader("X-Request-Id")
+  @RestHook(HookEvent.PRE_CALL)
+  def onPreCall(req : RestRequest) = {
+    var xrequestid = req.getHeader("X-Request-Id")
     if (StringUtils.isBlank(xrequestid)) {
       xrequestid = generateRequestId(req)
       req.getHeaders.put("X-Request-Id", xrequestid)
@@ -43,8 +45,9 @@ class ProbotResource extends Resource {
     log(Level.INFO, requestMsg, xrequestid, req.toString)
   }
 
-  override def onPostCall(req : RestRequest, res : RestResponse) = {
-    val xrequestid : String = req.getHeader("X-Request-Id")
+  @RestHook(HookEvent.POST_CALL)
+  def onPostCall(req : RestRequest, res : RestResponse) = {
+    val xrequestid = req.getHeader("X-Request-Id")
     res.setHeader("X-Request-Id", xrequestid)
     //val responseJson = logSerializer.serialize()
     log(Level.INFO, responseMsg, xrequestid, res.getStatus.toString)

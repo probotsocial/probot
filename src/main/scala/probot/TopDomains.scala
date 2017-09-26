@@ -16,8 +16,11 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 object TopDomains {
+
+  val domainEntityKeywords = List("domain", "site", "web")
+
   lazy val url : String = new URIBuilder(RootResource.asUri(StreamsConfigurator.getConfig().getConfig("server")))
-    .setPath("/twitter/top_domains").toString
+    .setPath("/twitter/TopDomains").toString
 
   def domainOf( url : String ) : Option[String] = {
     Try(new URL(url).getHost).toOption
@@ -32,7 +35,7 @@ object TopDomains {
     links=Array("options: '?method=OPTIONS'"),
     footer=Array("ASF 2.0 License")
   ),
-  path = "/top_domains",
+  path = "/TopDomains",
   title = "probot.TopDomains",
   description = "probot.TopDomains"
 )

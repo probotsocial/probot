@@ -13,9 +13,9 @@ import org.apache.streams.config.StreamsConfigurator
 
 object RootResource {
 
-  lazy val system = ActorSystem("mySystem")
+  val system = ActorSystem("mySystem")
 
-  lazy val url : String = asUri(StreamsConfigurator.getConfig().getConfig("server")).toString
+  val url : String = asUri(StreamsConfigurator.getConfig().getConfig("server")).toString
 
   def asUri(config : Config) : URI = {
     val uri = new URIBuilder()
@@ -39,15 +39,10 @@ object RootResource {
   title = "Probot",
   description = "Probot",
   children = Array(
-    classOf[probot.TwitterResource],
-    classOf[probot.Remoteable]
+    classOf[probot.ConfigurationResource],
+    classOf[probot.TwitterResource]
   )
 )
 class RootResource extends ResourceGroup {
-
-  @throws[ServletException]
-  override def init(): Unit = {
-    this.log("init")
-  }
 
 }

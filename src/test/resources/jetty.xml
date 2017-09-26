@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+    <Set name="connectors">
+        <Array type="org.eclipse.jetty.server.Connector">
+            <Item>
+                <New class="org.eclipse.jetty.server.ServerConnector">
+                    <Arg><Ref refid="Server"/></Arg>
+                    <Set name="port">8000</Set>
+                </New>
+            </Item>
+        </Array>
+    </Set>
+
+    <New id="context" class="org.eclipse.jetty.servlet.ServletContextHandler">
+        <Set name="contextPath">/</Set>
+        <Call name="addServlet">
+            <Arg>probot.RootResource</Arg>
+            <Arg>/*</Arg>
+        </Call>
+        <Set name="sessionHandler">
+            <New class="org.eclipse.jetty.server.session.SessionHandler" />
+        </Set>
+    </New>
+
+    <Set name="handler">
+        <New class="org.eclipse.jetty.server.handler.HandlerCollection">
+            <Set name="handlers">
+                <Array type="org.eclipse.jetty.server.Handler">
+                    <Item>
+                        <Ref refid="context" />
+                    </Item>
+                    <Item>
+                        <New class="org.eclipse.jetty.server.handler.DefaultHandler" />
+                    </Item>
+                </Array>
+            </Set>
+        </New>
+    </Set>
+
+
+</Configure>

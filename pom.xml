@@ -4,7 +4,7 @@
 
     <groupId>probot</groupId>
     <artifactId>probot</artifactId>
-    <version>0.1-incubating-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
     <name>probot</name>
     <description>probot</description>
@@ -42,13 +42,13 @@
     </distributionManagement>
 
     <properties>
-        <scala.version>2.11.8</scala.version>
+        <scala.version>2.11.11</scala.version>
         <scala.suffix>2.11</scala.suffix>
 
         <akka.version>2.5.4</akka.version>
         <jena.version>2.13.0</jena.version>
-        <juneau.version>6.3.2-incubating-SNAPSHOT</juneau.version>
-        <streams.version>0.5.1-incubating-SNAPSHOT</streams.version>
+        <juneau.version>6.4.0-incubating</juneau.version>
+        <streams.version>0.5.1-SNAPSHOT</streams.version>
         <typesafe.version>1.2.0</typesafe.version>
 
         <junit.version>4.11</junit.version>
@@ -106,12 +106,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-core</artifactId>
+            <artifactId>juneau-marshall</artifactId>
             <version>${juneau.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-rest</artifactId>
+            <artifactId>juneau-rest-server</artifactId>
             <version>${juneau.version}</version>
         </dependency>
         <dependency>
@@ -121,7 +121,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-microservice</artifactId>
+            <artifactId>juneau-microservice-server</artifactId>
             <version>${juneau.version}</version>
         </dependency>
         <dependency>
@@ -230,6 +230,32 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>${shade.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>package</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <outputDirectory>dist</outputDirectory>
+                        <outputFile>dist/${project.artifactId}-jar-with-dependencies.jar</outputFile>
+                        <filters>
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <exclude>**/META-INF/**</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <resource>reference.conf</resource>
+                            </transformer>
+                        </transformers>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.streams.plugins</groupId>

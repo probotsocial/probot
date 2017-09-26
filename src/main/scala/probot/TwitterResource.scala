@@ -17,32 +17,30 @@ import org.apache.juneau.rest.annotation.{HtmlDoc, Property, RestMethod, RestRes
 import org.apache.juneau.rest.converters.{Introspectable, Queryable, Traversable}
 import org.apache.juneau.rest.remoteable.RemoteableServlet
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfiguration, StreamsConfigurator}
-import org.apache.streams.twitter.{TwitterConfiguration, TwitterTimelineProviderConfiguration}
+import org.apache.streams.twitter.{TwitterConfiguration, TwitterFollowingConfiguration, TwitterTimelineProviderConfiguration}
 import org.apache.streams.twitter.api._
-import org.apache.streams.twitter.pojo.{Tweet, User}
-import org.apache.streams.twitter.provider.TwitterTimelineProvider
+import org.apache.streams.twitter.pojo.{Follow, Tweet, User}
+import org.apache.streams.twitter.provider.{TwitterFollowingProvider, TwitterTimelineProvider}
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 object TwitterResource {
 
-  lazy val streamsConfiguration: StreamsConfiguration = StreamsConfigurator.detectConfiguration()
-  lazy val twitterConfiguration: TwitterConfiguration = new ComponentConfigurator(classOf[TwitterConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
-  lazy val twitter: org.apache.streams.twitter.api.Twitter = Twitter.getInstance(twitterConfiguration)
-  lazy val twitterSecurity: org.apache.streams.twitter.api.TwitterSecurity = new TwitterSecurity
+  val twitter: org.apache.streams.twitter.api.Twitter = Twitter.getInstance(ConfigurationResource.twitter)
+  val twitterSecurity: org.apache.streams.twitter.api.TwitterSecurity = new TwitterSecurity
 
-  lazy val timelineConfiguration: TwitterTimelineProviderConfiguration = new ComponentConfigurator(classOf[TwitterTimelineProviderConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
-
-  lazy val accountSettings: AccountSettings = twitter.settings()
-  lazy val timeline: List[Tweet] = posts(accountSettings.getScreenName)
-  lazy val user: User = twitter.verifyCredentials()
+  final val accountSettings: AccountSettings = twitter.settings()
+  lazy final val followers: List[User] = following(accountSettings.getScreenName, ConfigurationResource.followers)
+  lazy final val friends: List[User] = following(accountSettings.getScreenName, ConfigurationResource.friends)
+  lazy final val timeline: List[Tweet] = posts(accountSettings.getScreenName)
+  lazy final val user: User = twitter.verifyCredentials()
 
   lazy val messageCreateRequestConsumer: ActorRef = RootResource.system.actorOf(Props[MessageCreateRequestConsumer])
 
   def posts(screenname : String) : List[Tweet] = {
     val timelineBuffer = scala.collection.mutable.ArrayBuffer.empty[Tweet]
-    val timelineProviderConfiguration = timelineConfiguration
+    val timelineProviderConfiguration = ConfigurationResource.timeline
       .withInfo(List(screenname))
       .asInstanceOf[TwitterTimelineProviderConfiguration]
     val timelineProvider = new TwitterTimelineProvider(timelineProviderConfiguration)
@@ -50,7 +48,7 @@ object TwitterResource {
     timelineProvider.startStream()
 
     do {
-      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs, TimeUnit.MILLISECONDS)
+      Uninterruptibles.sleepUninterruptibly(ConfigurationResource.streams.getBatchFrequencyMs, TimeUnit.MILLISECONDS)
       import scala.collection.JavaConversions._
       for (datum <- timelineProvider.readCurrent) {
         timelineBuffer += datum.getDocument.asInstanceOf[Tweet]
@@ -61,6 +59,36 @@ object TwitterResource {
     timelineProvider.cleanUp()
 
     timelineBuffer.toList
+  }
+
+  def following(screenname : String, baseConfiguration : TwitterFollowingConfiguration) : List[User] = {
+    val buffer = scala.collection.mutable.ArrayBuffer.empty[User]
+    val configuration = baseConfiguration
+      .withInfo(List(screenname))
+      .asInstanceOf[TwitterFollowingConfiguration]
+    val provider = new TwitterFollowingProvider(configuration)
+    provider.prepare(configuration)
+    provider.startStream()
+
+    do {
+      Uninterruptibles.sleepUninterruptibly(ConfigurationResource.streams.getBatchFrequencyMs, TimeUnit.MILLISECONDS)
+      import scala.collection.JavaConversions._
+      for( datum <- provider.readCurrent ) {
+        val follow = datum.getDocument.asInstanceOf[Follow]
+        val user = {
+          if( configuration.getEndpoint.equals("friends"))
+            follow.getFollowee
+          else
+            follow.getFollower
+        }
+        buffer += user
+      }
+    } while ( {
+      provider.isRunning
+    })
+    provider.cleanUp()
+
+    buffer.toList
   }
 }
 
@@ -79,33 +107,28 @@ object TwitterResource {
   properties=Array(new Property(name = "REST_allowMethodParam", value = "*")),
   children = Array(
     classOf[probot.TopDomains],
+    classOf[probot.TopFollowing],
     classOf[probot.TopHashtags],
     classOf[probot.TopMentions],
     classOf[probot.WebhookResource]
   )
 )
-class TwitterResource extends RemoteableServlet {
+class TwitterResource extends Resource {
   import TwitterResource._
 
-  @throws[ServletException]
-  override def init(): Unit = {
-    this.log("init")
-  }
+  @RestMethod(name = "GET")
+  @throws[IOException]
+  def get(req: RestRequest,
+          res: RestResponse) = {
 
-  @throws[Exception]
-  override def getServiceMap() : util.Map[Class[_],Object] = {
-    Map[Class[_],Object](
-      classOf[Twitter] -> twitter,
-      classOf[Account] -> twitter,
-      classOf[AccountActivity] -> twitter,
-      classOf[Favorites] -> twitter,
-      classOf[Friends] -> twitter,
-      classOf[Geo] -> twitter,
-      classOf[Media] -> twitter,
-      classOf[Statuses] -> twitter,
-      classOf[Users] -> twitter,
-      classOf[WelcomeMessageRules] -> twitter,
-      classOf[WelcomeMessages] -> twitter
-    ).asJava
+    val objectMap = new ObjectMap()
+      .append("followers", followers.size)
+      .append("friends", friends.size)
+      .append("timeline", timeline.size)
+      .append("user", user)
+
+    res.setOutput(objectMap)
+    res.setStatus(200)
+
   }
 }

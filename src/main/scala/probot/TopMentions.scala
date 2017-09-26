@@ -21,8 +21,11 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 object TopMentions {
+
+  val mentionKeywords = List("mention")
+
   lazy val url : String = new URIBuilder(RootResource.asUri(StreamsConfigurator.getConfig().getConfig("server")))
-    .setPath("/twitter/top_mentions").toString
+    .setPath("/twitter/TopMentions").toString
 
   lazy val userInformationConfiguration: TwitterUserInformationConfiguration = new ComponentConfigurator(classOf[TwitterUserInformationConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
 
@@ -39,7 +42,7 @@ object TopMentions {
     userInformationProvider.startStream()
 
     do {
-      Uninterruptibles.sleepUninterruptibly(TwitterResource.streamsConfiguration.getBatchFrequencyMs, TimeUnit.MILLISECONDS)
+      Uninterruptibles.sleepUninterruptibly(ConfigurationResource.streams.getBatchFrequencyMs, TimeUnit.MILLISECONDS)
       import scala.collection.JavaConversions._
       for (datum <- userInformationProvider.readCurrent) {
         userBuffer += datum.getDocument.asInstanceOf[User]
@@ -61,7 +64,7 @@ object TopMentions {
     links=Array("options: '?method=OPTIONS'"),
     footer=Array("ASF 2.0 License")
   ),
-  path = "/top_mentions",
+  path = "/TopMentions",
   title = "probot.TopMentions",
   description = "probot.TopMentions"
 )
