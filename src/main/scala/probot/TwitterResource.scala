@@ -110,6 +110,7 @@ object TwitterResource {
     classOf[probot.TopFollowing],
     classOf[probot.TopHashtags],
     classOf[probot.TopMentions],
+    classOf[probot.TopPosts],
     classOf[probot.WebhookResource]
   )
 )

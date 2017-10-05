@@ -60,7 +60,6 @@ class TopPosts extends Resource {
     }
     val result = postList.sortBy(_.getCount.toLong)(Ordering.Long.reverse)
     result
-
   }
 
 }

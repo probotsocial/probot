@@ -37,8 +37,7 @@ object TopFollowing {
 class TopFollowing extends Resource {
 
   @RestMethod(name = "GET")
-  @throws[IOException]
-  @throws[RestException]
+  @throws[Exception]
   def doGet(req: RestRequest) : java.util.List[java.util.Map[String, String]] = {
     val endpoint = req.getQuery("endpoint")
     val metric = req.getQuery("metric")
@@ -56,7 +55,7 @@ class TopFollowing extends Resource {
       else throw new RestException(400, "invalid metric")
     }
     val result : java.util.List[java.util.Map[String, String]] = userList.sortBy(_._1.toLong)(Ordering.Long.reverse)
-      .map(x => Map("screenname" -> x._1.toString, "count" -> x._2.toString).asJava)
+      .map(x => Map(metric -> x._1.toString, "screenname" -> x._2.toString).asJava)
     result
   }
 
