@@ -39,9 +39,9 @@ object ConfigurationResource {
   //  defaultRequestHeaders = Array("Accept: application/json", "Content-Type: application/json"),
   //  defaultResponseHeaders = Array("Content-Type: application/json"),
   htmldoc=new HtmlDoc(
+    footer=Array("ASF 2.0 License"),
     header=Array("Probot > Configuration"),
-    links=Array("options: '?method=OPTIONS'"),
-    footer=Array("ASF 2.0 License")
+    navlinks=Array("options: '?method=OPTIONS'")
   ),
   path = "/configuration",
   title = "probot.Configuration",

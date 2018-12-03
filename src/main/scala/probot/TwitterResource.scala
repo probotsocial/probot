@@ -97,7 +97,6 @@ object TwitterResource {
   //  defaultResponseHeaders = Array("Content-Type: application/json"),
   htmldoc=new HtmlDoc(
     header=Array("Probot > Twitter"),
-    links=Array("options: '?method=OPTIONS'"),
     footer=Array("ASF 2.0 License")
   ),
   path = "/twitter",

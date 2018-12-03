@@ -61,7 +61,6 @@ object TopMentions {
   defaultResponseHeaders = Array("Content-Type: text/html"),
   htmldoc=new HtmlDoc(
     header=Array("Probot > Twitter > TopMentions"),
-    links=Array("options: '?method=OPTIONS'"),
     footer=Array("ASF 2.0 License")
   ),
   path = "/TopMentions",

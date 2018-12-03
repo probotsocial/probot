@@ -111,7 +111,6 @@ object WebhookResource {
 	//  defaultResponseHeaders = Array("Content-Type: application/json"),
 	htmldoc=new HtmlDoc(
 		header=Array("Probot > Webhook"),
-		links=Array("options: '?method=OPTIONS'"),
 		footer=Array("ASF 2.0 License")
 	),
 	path = "/webhook",

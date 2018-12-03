@@ -12,10 +12,10 @@
             "type": "integer"
         },
         "id": {
-            "$ref": "http://streams.incubator.apache.org/site/0.5.1-incubating-SNAPSHOT/streams-project/streams-contrib/streams-provider-twitter/org/apache/streams/twitter/pojo/User.json#properties/id"
+            "$ref": "http://streams.apache.org/streams-contrib/streams-provider-twitter/org/apache/streams/twitter/pojo/User.json#properties/id"
         },
         "user": {
-            "$ref": "http://streams.incubator.apache.org/site/0.5.1-incubating-SNAPSHOT/streams-project/streams-contrib/streams-provider-twitter/org/apache/streams/twitter/pojo/User.json"
+            "$ref": "http://streams.apache.org/streams-contrib/streams-provider-twitter/org/apache/streams/twitter/pojo/User.json"
         }
     }
 }

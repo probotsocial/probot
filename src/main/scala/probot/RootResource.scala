@@ -32,16 +32,11 @@ object RootResource {
       "<div style='max-width:400px;min-width:200px'>",
       "Probot.Home",
       "</div>"),
-    links=Array("options: '?method=OPTIONS'"),
     footer=Array("ASF 2.0 License")
   ),
   path = "/",
   title = "Probot",
-  description = "Probot",
-  children = Array(
-    classOf[probot.ConfigurationResource],
-    classOf[probot.TwitterResource]
-  )
+  description = "Probot"
 )
 class RootResource extends ResourceGroup {
 

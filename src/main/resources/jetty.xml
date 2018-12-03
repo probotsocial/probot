@@ -20,18 +20,6 @@
             <Arg>probot.RootResource</Arg>
             <Arg>/*</Arg>
         </Call>
-        <Call name="addServlet">
-            <Arg>probot.ConfigurationResource</Arg>
-            <Arg>/configuration</Arg>
-        </Call>
-        <Call name="addServlet">
-            <Arg>probot.TwitterResource</Arg>
-            <Arg>/twitter</Arg>
-        </Call>
-        <Call name="addServlet">
-            <Arg>probot.WebhookResource</Arg>
-            <Arg>/twitter/webhook</Arg>
-        </Call>
         <Set name="sessionHandler">
             <New class="org.eclipse.jetty.server.session.SessionHandler" />
         </Set>

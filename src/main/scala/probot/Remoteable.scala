@@ -15,7 +15,6 @@ import scala.collection.JavaConverters._
   path = "/remoteable",
   htmldoc=new HtmlDoc(
     header=Array("Probot > Remoteable"),
-    links=Array("options: '?method=OPTIONS'"),
     footer=Array("ASF 2.0 License")
   ),
   title = "probot.Remoteable",
