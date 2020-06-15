@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  livy:
+    image: "probot/apache-livy:latest"
+    ports:
+      - 8998:8998
+    volumes:
+      - "/Users/Shared/Dropbox/git/probot:/data"
+
+  postgres:
+    image: "postgres:latest"
+    ports:
+      - 5432:5432
+
+  postgrest:
+    image: "postgrest/postgrest:latest"
+    ports:
+      - 5000:5000
+    links:
+      - "postgres:postgres"
+    volumes:
+      - "/Users/Shared/Dropbox/git/probot/postgrest.conf:/etc/postgrest.conf"
