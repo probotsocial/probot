@@ -3,10 +3,8 @@ package probot
 import java.io.IOException
 import java.net.URL
 
-import com.sun.javafx.fxml.builder.URLBuilder
-import com.typesafe.config.Config
 import org.apache.http.client.utils.URIBuilder
-import org.apache.juneau.microservice.Resource
+import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.RestRequest
 import org.apache.juneau.rest.annotation.{HtmlDoc, RestMethod, RestResource}
 import org.apache.streams.config.StreamsConfigurator
@@ -30,10 +28,10 @@ object TopHashtags {
     footer=Array("ASF 2.0 License")
   ),
   path = "/TopHashtags",
-  title = "probot.TopHashtags",
-  description = "probot.TopHashtags"
+  title = Array("probot.TopHashtags"),
+  description = Array("probot.TopHashtags")
 )
-class TopHashtags extends Resource {
+class TopHashtags extends BasicRestServlet {
 
   @RestMethod(name = "GET")
   @throws[IOException]

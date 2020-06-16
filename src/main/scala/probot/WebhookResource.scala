@@ -1,21 +1,20 @@
 package probot
 
 import java.io.IOException
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletResponse
-import javax.ws.rs.HttpMethod
-import javax.ws.rs.core.Response
 
+import javax.ws.rs.core.Response
 import akka.actor.{ActorRef, Props}
 import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.ObjectMap
+import org.apache.juneau.http.annotation.Header
+import org.apache.juneau.http.annotation.Query
 import org.apache.juneau.json.JsonParser
-import org.apache.juneau.microservice.Resource
-import org.apache.juneau.rest.annotation.{Body, Header, HtmlDoc, Query, RestMethod, RestResource}
+import org.apache.juneau.rest.BasicRestServlet
+import org.apache.juneau.rest.annotation.{HtmlDoc, RestMethod, RestResource}
 import org.apache.juneau.rest.{RestException, RestRequest, RestResponse}
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
-import org.apache.streams.twitter.TwitterOAuthConfiguration
 import org.apache.streams.twitter.api.{TwitterOAuthRequestInterceptor, TwitterSecurity, Webhook, WelcomeMessageNewRequest, WelcomeMessageNewRequestWrapper, WelcomeMessageNewRuleRequest, WelcomeMessageNewRuleRequestWrapper, WelcomeMessageRulesListRequest, WelcomeMessagesListRequest}
+import org.apache.streams.twitter.config.TwitterOAuthConfiguration
 import org.apache.streams.twitter.pojo.{MessageData, WebhookEvents, WelcomeMessage, WelcomeMessageRule}
 import probot.TwitterResource.twitter
 
@@ -114,10 +113,10 @@ object WebhookResource {
 		footer=Array("ASF 2.0 License")
 	),
 	path = "/webhook",
-	title = "probot.Webhook",
-	description = "probot.Webhook"
+	title = Array("probot.Webhook"),
+	description = Array("probot.Webhook")
 )
-class WebhookResource extends Resource {
+class WebhookResource extends BasicRestServlet {
 
 	import WebhookResource._
 

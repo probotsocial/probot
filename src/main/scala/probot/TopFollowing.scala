@@ -4,7 +4,7 @@ import java.io.IOException
 import java.net.URL
 
 import org.apache.http.client.utils.URIBuilder
-import org.apache.juneau.microservice.Resource
+import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.annotation._
 import org.apache.juneau.rest.{RestException, RestRequest, RestResponse}
 import org.apache.streams.config.StreamsConfigurator
@@ -30,10 +30,10 @@ object TopFollowing {
     footer=Array("ASF 2.0 License")
   ),
   path = "/TopFollowing",
-  title = "probot.TopFollowing",
-  description = "probot.TopFollowing"
+  title = Array("probot.TopFollowing"),
+  description = Array("probot.TopFollowing")
 )
-class TopFollowing extends Resource {
+class TopFollowing extends BasicRestServlet {
 
   @RestMethod(name = "GET")
   @throws[Exception]

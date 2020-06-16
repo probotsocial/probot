@@ -6,13 +6,13 @@ import java.util.concurrent.TimeUnit
 
 import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.http.client.utils.URIBuilder
-import org.apache.juneau.microservice.Resource
+import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.{RestException, RestRequest}
-import org.apache.juneau.rest.annotation.{HtmlDoc, Properties, Property, Query, RestMethod, RestResource}
+import org.apache.juneau.rest.annotation.{HtmlDoc, RestMethod, RestResource}
 import org.apache.juneau.rest.widget.QueryMenuItem
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
-import org.apache.streams.twitter.{TwitterTimelineProviderConfiguration, TwitterUserInformationConfiguration}
 import org.apache.streams.twitter.api.UsersLookupRequest
+import org.apache.streams.twitter.config.{TwitterTimelineProviderConfiguration, TwitterUserInformationConfiguration}
 import org.apache.streams.twitter.pojo.{Tweet, User}
 import org.apache.streams.twitter.provider.TwitterUserInformationProvider
 
@@ -36,10 +36,10 @@ object TopPosts {
     footer=Array("ASF 2.0 License")
   ),
   path = "/TopPosts",
-  title = "probot.TopPosts",
-  description = "probot.TopPosts"
+  title = Array("probot.TopPosts"),
+  description = Array("probot.TopPosts")
 )
-class TopPosts extends Resource {
+class TopPosts extends BasicRestServlet {
 
   import TopPosts._
 

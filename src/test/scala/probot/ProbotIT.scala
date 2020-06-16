@@ -1,32 +1,38 @@
 import java.net.URI
 import java.util.{Locale, Properties}
-import javax.ws.rs.core.Response
 
+import javax.ws.rs.core.Response
 import com.google.common.base.Preconditions
 import com.typesafe.config.{Config, ConfigValue}
 import org.apache.http.HttpResponse
 import org.apache.juneau.ObjectMap
+import org.apache.juneau.config.ConfigBuilder
 import org.apache.juneau.html.HtmlParser
-import org.apache.juneau.ini.{ConfigFile, ConfigFileBuilder}
 import org.apache.juneau.json.JsonParser
-import org.apache.juneau.microservice.RestMicroservice
+import org.apache.juneau.microservice.jetty.JettyMicroservice
+import org.apache.juneau.microservice.jetty.JettyMicroserviceBuilder
+import org.apache.juneau.microservice.resources.ConfigResource
+import org.apache.juneau.microservice.resources.LogsResource
 import org.apache.juneau.rest.client.{RestCall, RestClient, RestClientBuilder}
-import org.apache.juneau.rest.labels.ResourceDescription
+import org.apache.juneau.rest.helper.ResourceDescription
 import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.twitter.pojo.{DirectMessageEvent, WebhookEvents}
 import org.slf4j.{Logger, LoggerFactory}
 import org.testng.Assert
 import org.testng.Assert.assertEquals
+import org.testng.annotations.BeforeSuite
 import org.testng.annotations.{AfterClass, BeforeClass, Test}
+import probot.ProbotMicroservice
+import probot.ProbotResource
 
 import scala.collection.JavaConversions._
 
-class ProbotIT {
+class ProbotMicroserviceITs {
 
-  val LOGGER = LoggerFactory.getLogger(classOf[ProbotIT])
+  val LOGGER = LoggerFactory.getLogger(classOf[ProbotMicroserviceITs])
 
-  var microservice : RestMicroservice = _
-  var configFile : ConfigFile = _
+  var microservice : JettyMicroservice = _
+  var configFile : Config = _
   var microserviceURI : URI = _
   var restClientBuilder : RestClientBuilder = _
   var restClient : RestClient = _
@@ -34,22 +40,23 @@ class ProbotIT {
   /**
     * Startup the probot service.
     */
-  @BeforeClass
+  @BeforeSuite
   @throws[Exception]
   def setUp(): Unit = {
     Locale.setDefault(Locale.US)
-    val typesafe = StreamsConfigurator.getConfig
     val configFilePath = "target/test-classes/application.cfg"
-    configFile = new ConfigFileBuilder().build(configFilePath)
-    configFile = configFile.getResolving
-    LOGGER.info("configFile: {}", configFile)
-    Preconditions.checkNotNull(configFile.get("REST"))
-    microservice = new RestMicroservice().setConfig(configFilePath, false)
-    microservice = microservice.start
+    val builder : JettyMicroserviceBuilder = JettyMicroservice
+      .create()
+      .args("microservice.cfg")
+      .servlet(classOf[ConfigResource])
+      .servlet(classOf[LogsResource])
+      .servlet(classOf[ProbotResource])
+    microservice = new ProbotMicroservice(builder)
+    microservice.start()
     LOGGER.info("microservice: {}", microservice)
     microserviceURI = microservice.getURI
     LOGGER.info("microserviceURI: {}", microserviceURI)
-    restClientBuilder = new RestClientBuilder().rootUrl(microserviceURI)
+    restClientBuilder = RestClient.create().rootUrl(microserviceURI)
     restClient = restClientBuilder.build
   }
 

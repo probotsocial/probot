@@ -4,20 +4,19 @@ package probot
 import java.io.IOException
 import java.util
 import java.util.concurrent.TimeUnit
-import javax.servlet.ServletException
 
+import javax.servlet.ServletException
 import akka.actor.{Actor, ActorRef, Props}
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.http.HttpResponse
 import org.apache.juneau.ObjectMap
-import org.apache.juneau.microservice.{Resource, ResourceGroup}
+import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.{RestRequest, RestResponse}
 import org.apache.juneau.rest.annotation.{HtmlDoc, Property, RestMethod, RestResource}
 import org.apache.juneau.rest.converters.{Introspectable, Queryable, Traversable}
-import org.apache.juneau.rest.remoteable.RemoteableServlet
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfiguration, StreamsConfigurator}
-import org.apache.streams.twitter.{TwitterConfiguration, TwitterFollowingConfiguration, TwitterTimelineProviderConfiguration}
+import org.apache.streams.twitter.config.{TwitterConfiguration, TwitterFollowingConfiguration, TwitterTimelineProviderConfiguration}
 import org.apache.streams.twitter.api._
 import org.apache.streams.twitter.pojo.{Follow, Tweet, User}
 import org.apache.streams.twitter.provider.{TwitterFollowingProvider, TwitterTimelineProvider}
@@ -100,8 +99,8 @@ object TwitterResource {
     footer=Array("ASF 2.0 License")
   ),
   path = "/twitter",
-  title = "probot.Twitter",
-  description = "probot.Twitter",
+  title = Array("probot.Twitter"),
+  description = Array("probot.Twitter"),
   converters=Array(classOf[Traversable],classOf[Queryable],classOf[Introspectable]),
   properties=Array(new Property(name = "REST_allowMethodParam", value = "*")),
   children = Array(
@@ -113,7 +112,7 @@ object TwitterResource {
     classOf[probot.WebhookResource]
   )
 )
-class TwitterResource extends Resource {
+class TwitterResource extends BasicRestServlet {
   import TwitterResource._
 
   @RestMethod(name = "GET")

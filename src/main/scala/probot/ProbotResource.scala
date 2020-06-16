@@ -5,7 +5,7 @@ import java.util.logging.Level
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.juneau.json.JsonSerializerBuilder
-import org.apache.juneau.microservice.Resource
+import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.annotation.{HookEvent, RestHook}
 import org.apache.juneau.rest.{RestRequest, RestResponse}
 import org.apache.streams.pojo.json.Activity
@@ -20,7 +20,6 @@ object ProbotResource {
   val responseMsg = "{0} {1}"
 
   val logSerializer = new JsonSerializerBuilder()
-    .abridged(true)
     .detectRecursions(true)
     .ignoreRecursions(true)
     .build()
@@ -30,7 +29,7 @@ object ProbotResource {
   }
 }
 
-class ProbotResource extends Resource {
+class ProbotResource extends BasicRestServlet {
 
   import ProbotResource._
 

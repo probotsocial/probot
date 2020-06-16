@@ -1,13 +1,12 @@
 package probot
 
 import java.net.{URI, URL}
+
 import javax.servlet.ServletException
-
 import akka.actor.ActorSystem
-
 import com.typesafe.config.Config
 import org.apache.http.client.utils.URIBuilder
-import org.apache.juneau.microservice.ResourceGroup
+import org.apache.juneau.rest.BasicRestServletGroup
 import org.apache.juneau.rest.annotation.{HtmlDoc, RestResource}
 import org.apache.streams.config.StreamsConfigurator
 
@@ -35,9 +34,9 @@ object RootResource {
     footer=Array("ASF 2.0 License")
   ),
   path = "/",
-  title = "Probot",
-  description = "Probot"
+  title = Array("Probot"),
+  description = Array("Probot")
 )
-class RootResource extends ResourceGroup {
+class RootResource extends BasicRestServletGroup {
 
 }

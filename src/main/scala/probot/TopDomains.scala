@@ -4,7 +4,7 @@ import java.io.IOException
 import java.net.URL
 
 import org.apache.http.client.utils.URIBuilder
-import org.apache.juneau.microservice.Resource
+import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.RestRequest
 import org.apache.juneau.rest.annotation.{HtmlDoc, RestMethod, RestResource}
 import org.apache.juneau.rest.widget.QueryMenuItem
@@ -12,7 +12,6 @@ import org.apache.streams.config.StreamsConfigurator
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
-
 import scala.util.Try
 
 object TopDomains {
@@ -35,10 +34,10 @@ object TopDomains {
     footer=Array("ASF 2.0 License")
   ),
   path = "/TopDomains",
-  title = "probot.TopDomains",
-  description = "probot.TopDomains"
+  title = Array("probot.TopDomains"),
+  description = Array("probot.TopDomains")
 )
-class TopDomains extends Resource {
+class TopDomains extends BasicRestServlet {
 
   import TopDomains._
 
