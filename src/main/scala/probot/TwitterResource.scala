@@ -105,6 +105,7 @@ object TwitterResource {
   converters=Array(classOf[Traversable],classOf[Queryable],classOf[Introspectable]),
   properties=Array(new Property(name = "REST_allowMethodParam", value = "*")),
   children = Array(
+    classOf[probot.DirectMessageResource],
     classOf[probot.WebhookResource]
   )
 )

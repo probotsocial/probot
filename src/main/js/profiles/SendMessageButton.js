@@ -3,10 +3,10 @@ import { Fragment, useState } from 'react';
 import {
     Button,
     Confirm,
-    useUpdateMany,
     useRefresh,
     useNotify,
     useUnselectAll,
+    useUpdateMany
 } from 'react-admin';
 
 const SendMessageButton = ({ selectedIds }) => {
@@ -15,9 +15,9 @@ const SendMessageButton = ({ selectedIds }) => {
     const notify = useNotify();
     const unselectAll = useUnselectAll();
     const [updateMany, { loading }] = useUpdateMany(
-        'profiles',
+        'followers',
         selectedIds,
-        { views: 0 },
+        { event: 'sendMessage'},
         {
             onSuccess: () => {
                 refresh();

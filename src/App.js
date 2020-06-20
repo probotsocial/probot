@@ -4,7 +4,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import logo from './logo.svg';
 
 import authProvider from './main/js/AuthProvider';
-import postgrestRestProvider from '@raphiniert/ra-data-postgrest';
+import dataProvider from './main/js/DataProvider';
 
 import { ProfileList } from "./main/js/profiles";
 import './App.css';
@@ -24,7 +24,7 @@ const App = () => {
           title="ProBot"
           // dashboard={Dashboard}
           authProvider={authProvider}
-          dataProvider={postgrestRestProvider('http://localhost:5000')}
+          dataProvider={dataProvider}
       >
           <Resource name="followers" list={ProfileList} show={ShowGuesser}/>
       </Admin>
