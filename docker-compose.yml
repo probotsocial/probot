@@ -17,12 +17,13 @@ services:
       - CHOKIDAR_USEPOLLING=true
 
   livy:
-    image: "probot/apache-livy:latest"
     container_name: livy
+    image: "probot/apache-livy:latest"
     ports:
       - 8998:8998
     volumes:
-      - "/Users/Shared/Dropbox/git/probot:/data"
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/dist:/jars"
     links:
       - "postgres:postgres"
 
@@ -32,8 +33,8 @@ services:
     ports:
       - 10000:10000
     volumes:
-      - "/Users/Shared/Dropbox/git/probot:/data"
-      - "/Users/Shared/Dropbox/git/probot/src/test/resources/probot-steveblackmon.conf:/application.conf"
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/microservice.conf:/application.conf"
 
   ngrok:
     image: "wernight/ngrok:latest"
@@ -42,7 +43,6 @@ services:
     links:
       - "microservice:microservice"
     environment:
-      - NGROK_AUTH=1dS933OCDR0WmOVCEg74Lg7raG0_47mY26JnbCHEgummdzbYe
       - NGROK_SUBDOMAIN=64402502886e
       - NGROK_PORT=microservice:10000
 
@@ -50,6 +50,10 @@ services:
     image: "postgres:latest"
     ports:
       - 5432:5432
+    environment:
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - "$WORKDIR/volumes/postgres:/var/lib/postgresql/data"
 
   postgrest:
     image: "postgrest/postgrest:latest"
@@ -58,4 +62,4 @@ services:
     links:
       - "postgres:postgres"
     volumes:
-      - "/Users/Shared/Dropbox/git/probot/postgrest.conf:/etc/postgrest.conf"
+      - "$WORKDIR/postgrest.conf:/etc/postgrest.conf"

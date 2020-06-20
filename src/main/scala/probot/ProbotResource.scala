@@ -43,8 +43,7 @@ object ProbotResource {
   title = Array("probot"),
   description = Array("probot"),
   children = Array(
-    classOf[TwitterResource],
-    classOf[SparkResource]
+    classOf[TwitterResource]
   )
 )
 class ProbotResource extends BasicRestServletGroup {

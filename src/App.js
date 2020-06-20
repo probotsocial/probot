@@ -26,7 +26,7 @@ const App = () => {
           authProvider={authProvider}
           dataProvider={postgrestRestProvider('http://localhost:5000')}
       >
-          <Resource name="profile" list={ProfileList} show={ShowGuesser}/>
+          <Resource name="followers" list={ProfileList} show={ShowGuesser}/>
       </Admin>
   );
 };
