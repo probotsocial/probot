@@ -48,8 +48,9 @@
         <akka.version>2.5.4</akka.version>
         <jena.version>2.13.0</jena.version>
         <juneau.version>8.0.0</juneau.version>
+        <livy.version>0.7.0-incubating</livy.version>
         <spark.version>2.4.5</spark.version>
-        <streams.version>0.6.1</streams.version>
+        <streams.version>0.6.2-SNAPSHOT</streams.version>
         <typesafe.version>1.3.3</typesafe.version>
 
         <junit.version>4.11</junit.version>
@@ -60,6 +61,7 @@
 
         <build-helper.plugin.version>1.8</build-helper.plugin.version>
         <compiler.plugin.version>3.0</compiler.plugin.version>
+        <docker.plugin.version>0.33.0</docker.plugin.version>
         <shade.plugin.version>2.4.3</shade.plugin.version>
         <scala-maven.plugin.version>3.2.2</scala-maven.plugin.version>
 
@@ -175,6 +177,16 @@
             <version>${streams.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.livy</groupId>
+            <artifactId>livy-client-common</artifactId>
+            <version>${livy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.livy</groupId>
+            <artifactId>livy-scala-api_${scala.suffix}</artifactId>
+            <version>${livy.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.suffix}</artifactId>
             <version>${spark.version}</version>
@@ -235,28 +247,68 @@
         </testResources>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.streams.plugins</groupId>
-                <artifactId>streams-plugin-pojo</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <inherited>false</inherited>
             </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${compiler.plugin.version}</version>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>${scala-maven.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>scala-compile-first</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>scala-test-compile</id>
+                            <phase>process-test-resources</phase>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <scalaVersion>${scala.version}</scalaVersion>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>target/generated-sources/pojo</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -290,67 +342,45 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.streams.plugins</groupId>
-                    <artifactId>streams-plugin-pojo</artifactId>
-                    <version>${streams.version}</version>
-                    <executions>
-                        <execution>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>generate-sources</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.streams</groupId>
-                            <artifactId>streams-provider-twitter</artifactId>
-                            <version>${streams.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>${build-helper.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>add-source</id>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>add-source</goal>
-                            </goals>
-                            <configuration>
-                                <sources>
-                                    <source>target/generated-sources/pojo</source>
-                                </sources>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>net.alchim31.maven</groupId>
-                    <artifactId>scala-maven-plugin</artifactId>
-                    <version>${scala-maven.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>scala-compile-first</id>
-                            <phase>process-resources</phase>
-                            <goals>
-                                <goal>add-source</goal>
-                                <goal>compile</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>scala-test-compile</id>
-                            <phase>process-test-resources</phase>
-                            <goals>
-                                <goal>testCompile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <scalaVersion>${scala.version}</scalaVersion>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker.plugin.version}</version>
+                    <configuration combine.self="append">
+                        <skip>false</skip>
+                        <watchInterval>500</watchInterval>
+                        <logDate>default</logDate>
+                        <verbose>true</verbose>
+                        <images>
+                            <image>
+                                <name>probot/microservice</name>
+                                <alias>microservice</alias>
+                                <build>
+                                    <dockerFile>Dockerfile</dockerFile>
+                                    <tags>
+                                        <tag>${current.time}</tag>
+                                        <tag>${project.version}</tag>
+                                        <tag>latest</tag>
+                                    </tags>
+                                    <assembly>
+                                        <mode>dir</mode>
+                                        <targetDir>/</targetDir>
+                                        <inline>
+                                            <baseDirectory>/</baseDirectory>
+                                            <fileSets>
+                                                <fileSet>
+                                                    <directory>dist</directory>
+                                                    <outputDirectory>/</outputDirectory>
+                                                </fileSet>
+                                                <fileSet>
+                                                    <directory>src/main/resources</directory>
+                                                    <outputDirectory>/</outputDirectory>
+                                                </fileSet>
+                                            </fileSets>
+                                        </inline>
+                                    </assembly>
+                                </build>
+                            </image>
+                        </images>
                     </configuration>
                 </plugin>
             </plugins>

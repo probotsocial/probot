@@ -20,6 +20,8 @@ object RootResource {
     val uri = new URIBuilder()
         .setScheme(config.getString("scheme"))
         .setHost(config.getString("host"))
+        .setPort(config.getInt("port"))
+        .setPath(config.getString("path"))
         .build()
     uri
   }
@@ -34,8 +36,12 @@ object RootResource {
     footer=Array("ASF 2.0 License")
   ),
   path = "/",
-  title = Array("Probot"),
-  description = Array("Probot")
+  title = Array("Home"),
+  description = Array("Home"),
+  children = Array(
+    classOf[ConfigurationResource],
+    classOf[ProbotResource]
+  )
 )
 class RootResource extends BasicRestServletGroup {
 

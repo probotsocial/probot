@@ -6,6 +6,9 @@ import java.util.logging.Level
 import org.apache.commons.lang3.StringUtils
 import org.apache.juneau.json.JsonSerializerBuilder
 import org.apache.juneau.rest.BasicRestServlet
+import org.apache.juneau.rest.BasicRestServletGroup
+import org.apache.juneau.rest.annotation.HtmlDoc
+import org.apache.juneau.rest.annotation.RestResource
 import org.apache.juneau.rest.annotation.{HookEvent, RestHook}
 import org.apache.juneau.rest.{RestRequest, RestResponse}
 import org.apache.streams.pojo.json.Activity
@@ -29,7 +32,22 @@ object ProbotResource {
   }
 }
 
-class ProbotResource extends BasicRestServlet {
+@RestResource(
+  defaultRequestHeaders = Array("Accept: text/html"),
+  defaultResponseHeaders = Array("Content-Type: text/html"),
+  htmldoc=new HtmlDoc(
+    header=Array("Probot"),
+    footer=Array("ASF 2.0 License")
+  ),
+  path = "/probot",
+  title = Array("probot"),
+  description = Array("probot"),
+  children = Array(
+    classOf[TwitterResource],
+    classOf[SparkResource]
+  )
+)
+class ProbotResource extends BasicRestServletGroup {
 
   import ProbotResource._
 

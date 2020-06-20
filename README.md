@@ -16,17 +16,21 @@ and packaged with [Yarn](http://maven.apache.org).
 
 Run the following to build the back-end from source.
 
-    mvn clean package
+    mvn install
     
 Run the following to build the front-end from source.
 
     yarn install
 
-Run the following to prepare docker containers for deployment.
+## running
+
+Run the following to prepare the back-end for docker deployment.
+
+    mvn clean package docker:build
+
+Run the following to prepare the front-end for docker deployment.
 
     docker-compose build
-
-## running
 
 Run the following to deploy the stack to local docker environment.
 
@@ -35,6 +39,7 @@ Run the following to deploy the stack to local docker environment.
 ## dependencies
 
 Probot back-end has the following essential library dependencies:
+
  * [Apache Juneau](http://juneau.incubator.apache.org "http://juneau.incubator.apache.org")
    HTTP microservice (based on Jetty) and data marshalling libraries
  * [Apache Spark](http://spark.apache.org "http://spark.apache.org")
@@ -44,6 +49,8 @@ Probot back-end has the following essential library dependencies:
 
 Probot front-end has the following essential dependencies:
 
+ * [ReactJS](https://reactjs.org/ "https://reactjs.org/")
+   A JavaScript library for building user interfaces
  * [React Admin](https://marmelab.com/react-admin/ "https://marmelab.com/react-admin/")
    A Web Framework for B2B applications
  * [Material UI](https://material-ui.com/ "https://material-ui.com/")
@@ -51,6 +58,8 @@ Probot front-end has the following essential dependencies:
 
 Probot relies on several supporting run-time dependencies:
 
+ * [Livy](https://livy.apache.org/ "https://livy.apache.org")
+   A REST Service for Apache Spark
  * [Postgresql](https://www.postgresql.org/ "https://www.postgresql.org/")
    The World's Most Advanced Open Source Relational Database
  * [Postgrest](https://postgrest.org "http://www.postgrest.org")

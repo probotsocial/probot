@@ -2,12 +2,49 @@ version: '3'
 
 services:
 
+  app:
+    image: "probot/app:latest"
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - 3000:80
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
   livy:
     image: "probot/apache-livy:latest"
+    container_name: livy
     ports:
       - 8998:8998
     volumes:
       - "/Users/Shared/Dropbox/git/probot:/data"
+    links:
+      - "postgres:postgres"
+
+  #  microservice:
+#    container_name: microservice
+#    image: "probot/microservice:latest"
+#    ports:
+#      - 10000:10000
+#    volumes:
+#      - "/Users/Shared/Dropbox/git/probot:/data"
+#      - "/Users/Shared/Dropbox/git/probot/src/test/resources/probot-steveblackmon.conf:/application.conf"
+
+#  ngrok:
+#    image: "wernight/ngrok:latest"
+#    ports:
+#      - 8080:8080
+#    links:
+#      - "microservice:microservice"
+#    environment:
+#      - NGROK_AUTH=1dS933OCDR0WmOVCEg74Lg7raG0_47mY26JnbCHEgummdzbYe
+#      - NGROK_SUBDOMAIN=64402502886e
+#      - NGROK_PORT=microservice:10000
 
   postgres:
     image: "postgres:latest"

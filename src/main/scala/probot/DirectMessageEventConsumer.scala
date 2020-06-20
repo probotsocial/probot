@@ -55,23 +55,23 @@ object DirectMessageEventConsumer {
     def unapply(event: DirectMessageEvent): Option[RankEvent] = {
       val text = event.getMessageCreate.getMessageData.getText.toLowerCase
       if( superlativeKeywords.exists(text.contains)) {
-        if( TopHashtags.hashtagEntityKeywords.exists(text.contains)) {
-          return Some(new RankEvent(RankEntity.hashtags))
-        } else if( TopDomains.domainEntityKeywords.exists(text.contains )) {
-          return Some(new RankEvent(RankEntity.domains))
-        } else if ( TopMentions.mentionKeywords.exists(text.contains )) {
-          return Some(new RankEvent(RankEntity.mentions))
-        } else if ( TopPosts.postEntityKeywords.exists(text.contains )) {
-          return Some(new RankEvent(RankEntity.posts))
-        } else if ( TopFollowing.followingEntityKeywords.exists(text.contains )) {
-          val entity = TopFollowing.followingEntityKeywords.find( text.contains )
-          if( clauseKeywords.exists(text.contains)) {
-            val metric = metricKeywords.find( text.contains )
-            return Some(new RankEvent(RankEntity.withName(entity.get), metric.get))
-          } else {
-            return Some(new RankEvent(RankEntity.withName(entity.get)))
-          }
-        }
+//        if( TopHashtags.hashtagEntityKeywords.exists(text.contains)) {
+//          return Some(new RankEvent(RankEntity.hashtags))
+//        } else if( TopDomains.domainEntityKeywords.exists(text.contains )) {
+//          return Some(new RankEvent(RankEntity.domains))
+//        } else if ( TopMentions.mentionKeywords.exists(text.contains )) {
+//          return Some(new RankEvent(RankEntity.mentions))
+//        } else if ( TopPosts.postEntityKeywords.exists(text.contains )) {
+//          return Some(new RankEvent(RankEntity.posts))
+//        } else if ( TopFollowing.followingEntityKeywords.exists(text.contains )) {
+//          val entity = TopFollowing.followingEntityKeywords.find( text.contains )
+//          if( clauseKeywords.exists(text.contains)) {
+//            val metric = metricKeywords.find( text.contains )
+//            return Some(new RankEvent(RankEntity.withName(entity.get), metric.get))
+//          } else {
+//            return Some(new RankEvent(RankEntity.withName(entity.get)))
+//          }
+//        }
       }
       None
     }
@@ -145,17 +145,18 @@ class DirectMessageEventConsumer extends Actor with ActorLogging {
 
   def listURL(event: RankEvent): URL = {
     (event.entity, event.metric) match {
-      case (RankEntity.domains, _) => new URL(TopDomains.url.toString)
-      case (RankEntity.hashtags, _) => new URL(TopHashtags.url.toString)
-      case (RankEntity.mentions, _) => new URL(TopMentions.url.toString)
-      case (RankEntity.posts, metric) => new URIBuilder(TopFollowing.url.toString)
-                                  .addParameter("metric", metric).build().toURL
-      case (RankEntity.followers, metric) => new URIBuilder(TopFollowing.url.toString)
-                                  .addParameter("endpoint", RankEntity.followers.toString)
-                                  .addParameter("metric", metric).build().toURL
-      case (RankEntity.friends, metric) => new URIBuilder(TopFollowing.url.toString)
-                                  .addParameter("endpoint", RankEntity.friends.toString)
-                                  .addParameter("metric", metric).build().toURL
+//      case (RankEntity.domains, _) => new URL(TopDomains.url.toString)
+//      case (RankEntity.hashtags, _) => new URL(TopHashtags.url.toString)
+//      case (RankEntity.mentions, _) => new URL(TopMentions.url.toString)
+//      case (RankEntity.posts, metric) => new URIBuilder(TopFollowing.url.toString)
+//                                  .addParameter("metric", metric).build().toURL
+//      case (RankEntity.followers, metric) => new URIBuilder(TopFollowing.url.toString)
+//                                  .addParameter("endpoint", RankEntity.followers.toString)
+//                                  .addParameter("metric", metric).build().toURL
+//      case (RankEntity.friends, metric) => new URIBuilder(TopFollowing.url.toString)
+//                                  .addParameter("endpoint", RankEntity.friends.toString)
+//                                  .addParameter("metric", metric).build().toURL
+      case _ => new URL("http://idk.com")
     }
   }
 
