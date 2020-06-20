@@ -3,10 +3,10 @@ import { Fragment, useState } from 'react';
 import {
     Button,
     Confirm,
-    useRefresh,
     useNotify,
-    useUnselectAll,
-    useUpdateMany
+    useRefresh,
+    useUpdateMany,
+    useUnselectAll
 } from 'react-admin';
 
 const SendMessageButton = ({ selectedIds }) => {
@@ -17,19 +17,17 @@ const SendMessageButton = ({ selectedIds }) => {
     const [updateMany, { loading }] = useUpdateMany(
         'followers',
         selectedIds,
-        { event: 'sendMessage'},
+        { event: 'sendMessage' },
         {
             onSuccess: () => {
+                notify('Messages sent.', 'warning')
                 refresh();
-                notify('Direct Messages queued.');
-                unselectAll('profiles');
             },
-            onFailure: error => notify('Error', 'warning'),
+            onFailure: error => notify('Messages not sent.', 'warning'),
         }
     );
     const handleClick = () => setOpen(true);
     const handleDialogClose = () => setOpen(false);
-
     const handleConfirm = () => {
         updateMany();
         setOpen(false);

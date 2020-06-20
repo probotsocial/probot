@@ -14,12 +14,16 @@ import org.apache.juneau.rest.converters.Traversable
 import org.apache.juneau.rest.RestRequest
 import org.apache.juneau.rest.RestResponse
 import TwitterResource.twitter
+import javax.ws.rs.Consumes
+import javax.ws.rs.Produces
+import javax.ws.rs.ext.Provider
 import org.apache.juneau.http.Accept
 import org.apache.juneau.http.ContentType
 import org.apache.juneau.http.annotation.Body
 import org.apache.juneau.json.JsonParser;
 
 @RestResource(
+  debug = "true",
   defaultRequestHeaders = Array("Accept: application/json", "Content-Type: application/json"),
   htmldoc=new HtmlDoc(
     footer=Array("ASF 2.0 License"),
@@ -36,6 +40,8 @@ class DirectMessageResource extends BasicRestServlet {
   import ConfigurationResource._
 
   @RestMethod(name = "POST")
+  @Consumes(Array("application/json"))
+  @Produces(Array("application/json"))
   @throws[IOException]
   def doPost( req : RestRequest , res : RestResponse ): Unit = {
 
