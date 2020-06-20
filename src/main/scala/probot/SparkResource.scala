@@ -38,8 +38,7 @@ object SparkResource {
   ),
   path = "/spark",
   title = Array("spark"),
-  description = Array("spark"),
-  children = Array(classOf[TwitterResource])
+  description = Array("spark")
 )
 class SparkResource extends BasicRestServletGroup {
 
