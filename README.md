@@ -49,9 +49,12 @@ Configuration file by default are expected in the working directory, same as the
 Alternative working directory or configuration file locations are possible with tweaks to docker-compose.yml.
 
 Files you must edit:
-  * docker-compose.yml
+  * .env
     Supply your own values for
-    - services.ngrok.environment.NGROK_SUBDOMAIN
+    - NGROK_AUTH
+    - NGROK_PASSWORD
+    - NGROK_SUBDOMAIN
+    - NGROK_USERNAME
   * microservice.conf
     Supply your own values for
     - twitter.environment

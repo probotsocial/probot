@@ -12,7 +12,7 @@ services:
       - '.:/app'
       - '/app/node_modules'
     ports:
-      - 3000:80
+      - 80:80
     environment:
       - CHOKIDAR_USEPOLLING=true
 
@@ -32,6 +32,8 @@ services:
     image: "probot/microservice:latest"
     ports:
       - 10000:10000
+    links:
+      - "postgrest:postgrest"
     volumes:
       - "$WORKDIR:/workdir"
       - "$WORKDIR/microservice.conf:/application.conf"
@@ -39,11 +41,13 @@ services:
   ngrok:
     image: "wernight/ngrok:latest"
     ports:
+      - 4040:4040
       - 8080:8080
     links:
       - "microservice:microservice"
     environment:
-      - NGROK_SUBDOMAIN=64402502886e
+      - NGROK_AUTH
+      - NGROK_SUBDOMAIN
       - NGROK_PORT=microservice:10000
 
   postgres:
@@ -58,7 +62,7 @@ services:
   postgrest:
     image: "postgrest/postgrest:latest"
     ports:
-      - 5000:5000
+      - 5000:3000
     links:
       - "postgres:postgres"
     volumes:
