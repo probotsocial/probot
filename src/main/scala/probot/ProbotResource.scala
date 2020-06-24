@@ -49,6 +49,12 @@ object ProbotResource {
 class ProbotResource extends BasicRestServletGroup {
 
   import ProbotResource._
+//
+//  @RestHook(HookEvent.POST_INIT_CHILD_FIRST)
+//  def onPostInit()= {
+//    val accountActivityResource = getContext.getChildResource("twitter").getChildResource("activity").asInstanceOf[AccountActivityResource]
+//    accountActivityResource.connection()
+//  }
 
   @RestHook(HookEvent.PRE_CALL)
   def onPreCall(req : RestRequest) = {

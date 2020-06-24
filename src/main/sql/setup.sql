@@ -1,8 +1,0 @@
-CREATE ROLE "anon";
-
-GRANT postgres to "anon";
-
-DROP SCHEMA IF EXISTS "probot" CASCADE;
-CREATE SCHEMA IF NOT EXISTS "probot";
-
-GRANT ALL PRIVILEGES ON DATABASE "postgres" TO "anon";

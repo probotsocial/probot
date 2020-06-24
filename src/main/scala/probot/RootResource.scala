@@ -19,6 +19,7 @@ object RootResource {
   def asUri(config : Config) : URI = {
     val uri = new URIBuilder()
         .setScheme(config.getString("scheme"))
+        .setUserInfo(config.getString("username"), config.getString("password"))
         .setHost(config.getString("host"))
         .setPort(config.getInt("port"))
         .setPath(config.getString("path"))

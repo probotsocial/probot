@@ -10,6 +10,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.http.HttpResponse
+import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.ObjectMap
 import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.{RestRequest, RestResponse}
@@ -26,11 +27,12 @@ import scala.collection.JavaConverters._
 
 object ConfigurationResource {
 
+  val serverConfig = StreamsConfigurator.getConfig().getConfig("server")
+
   val streams: StreamsConfiguration = StreamsConfigurator.detectConfiguration()
   val twitter: TwitterConfiguration = new ComponentConfigurator(classOf[TwitterConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
-  val followers: TwitterFollowingConfiguration = new ComponentConfigurator(classOf[TwitterFollowingConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("followers"));
-  val friends: TwitterFollowingConfiguration = new ComponentConfigurator(classOf[TwitterFollowingConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("friends"));
-  val timeline: TwitterTimelineProviderConfiguration = new ComponentConfigurator(classOf[TwitterTimelineProviderConfiguration]).detectConfiguration(StreamsConfigurator.getConfig().getConfig("timeline"));
+  val url : String = new URIBuilder(RootResource.asUri(serverConfig)).toString
+  val welcomeMessage = StreamsConfigurator.getConfig.getString("welcome_message");
 
 }
 
@@ -53,14 +55,13 @@ class ConfigurationResource extends BasicRestServlet {
 
   @RestMethod(name = "GET")
   @throws[IOException]
-  def get(req: RestRequest,
-          res: RestResponse) = {
+  def get(req: RestRequest, res: RestResponse) = {
 
     val objectMap = new ObjectMap()
-      .append("followers", followers)
-      .append("friends", friends)
-      .append("timeline", timeline)
       .append("streams", streams)
+      .append("twitter", twitter)
+      .append("url", url)
+      .append("welcomeMessage", welcomeMessage)
 
     res.setOutput(objectMap)
     res.setStatus(200)
