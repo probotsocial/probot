@@ -6,6 +6,7 @@ import logo from './logo.svg';
 import authProvider from './main/js/AuthProvider';
 import dataProvider from './main/js/DataProvider';
 
+import { MessageList } from "./main/js/messages";
 import { ProfileList } from "./main/js/profiles";
 import './App.css';
 
@@ -27,6 +28,7 @@ const App = () => {
           dataProvider={dataProvider}
       >
           <Resource name="followers" list={ProfileList} show={ShowGuesser}/>
+          <Resource name="messages" label="Messages" list={MessageList} show={ShowGuesser}/>
       </Admin>
   );
 };
