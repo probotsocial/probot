@@ -22,6 +22,7 @@ const SendMessageButton = ({ selectedIds }) => {
             onSuccess: () => {
                 notify('Messages sent.', 'warning')
                 refresh();
+                unselectAll('followers');
             },
             onFailure: error => notify('Messages not sent.', 'warning'),
         }

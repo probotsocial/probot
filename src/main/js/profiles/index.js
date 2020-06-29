@@ -15,7 +15,7 @@ export const ProfileFilter = (props) => (
 );
 
 export const ProfileList = props => (
-    <List {...props} perPage={1000} filters={<ProfileFilter/>} bulkActionButtons={<SendMessageButton />} >
+    <List {...props} perPage={100} filters={<ProfileFilter/>} bulkActionButtons={<SendMessageButton />} >
         <Datagrid rowClick="show">
             <TextField source="id" label="ID"/>
             <TextField source="apst_handle" label="Screen Name"/>

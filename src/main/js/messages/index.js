@@ -7,13 +7,11 @@ export const MessageList = props => (
     <List {...props} perPage={100} >
         <Datagrid rowClick="show">
             <TextField source="id" label="ID"/>
-            <DateField source="timestamp"/>
+            <DateField source="timestamp" label="Timestamp" />
             <TextField source="type" label="Type"/>
             <TextField source="sender_id" />
             <TextField source="recipient_id" />
             <TextField source="text" label="Text"/>
-            {/*<TextField source="json->>type" label="Type"/>*/}
-            {/*<TextField source="json->'message_create'->'message_data'->>'text'" label="Text"/>*/}
         </Datagrid>
     </List>
 );
