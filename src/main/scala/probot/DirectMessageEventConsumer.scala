@@ -3,10 +3,13 @@ package probot
 import java.net.URL
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import org.apache.commons.validator.EmailValidator
 import org.apache.http.client.utils.URIBuilder
 import org.apache.streams.twitter.api.MessageCreateRequest
 import org.apache.streams.twitter.pojo._
 import probot.DirectMessageEventConsumer.RankEntity.RankEntity
+
+import scala.util.Try
 
 object DirectMessageEventConsumer {
 
@@ -35,6 +38,38 @@ object DirectMessageEventConsumer {
       if( echoKeywords.contains(event.getMessageCreate.getMessageData.getText)) {
         Some(new EchoEvent(event.getMessageCreate.getMessageData.getText))
       }
+      else None
+    }
+  }
+
+  case class EmailAddressEvent(emailAddress : String) extends DirectMessageEvent
+  object EmailAddressEvent {
+    final val extractPossibleEmailRegex = "([a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+.[a-zA-Z0-9_-]+)".r
+    def unapply(event: DirectMessageEvent) = {
+      val possibleEmail = {
+        event.getMessageCreate.getMessageData.getText.toLowerCase match {
+          case extractPossibleEmailRegex(possibleEmail) => Some(possibleEmail)
+          case _ => None
+        }
+      }
+      if( possibleEmail.isDefined && EmailValidator.getInstance().isValid(possibleEmail.get))
+        Some(new EmailAddressEvent(possibleEmail.get))
+      else None
+    }
+  }
+
+  case class PhoneNumberEvent(phoneNumber : String) extends DirectMessageEvent
+  object PhoneNumberEvent {
+    import com.google.i18n.phonenumbers.PhoneNumberUtil
+    import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat
+
+    final val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance
+
+    def unapply(event: DirectMessageEvent) = {
+      val parsed = Try(phoneNumberUtil.parse(event.getMessageCreate.getMessageData.getText, null))
+      val formatted = Try(phoneNumberUtil.format(parsed.get, PhoneNumberFormat.E164))
+      if( formatted.isSuccess)
+        Some(new PhoneNumberEvent(formatted.get))
       else None
     }
   }
@@ -101,8 +136,7 @@ class DirectMessageEventConsumer extends Actor with ActorLogging {
       )
     messageCreateRequestConsumer ! messageCreateRequest
   }
-
-
+  
   override def receive: Receive = {
     case event: DirectMessageEvent => {
       val senderId = event.getMessageCreate.getSenderId
@@ -128,7 +162,6 @@ class DirectMessageEventConsumer extends Actor with ActorLogging {
       case ping : PingEvent => respondTo(ping)
       case echo : EchoEvent => respondTo(echo)
       case rank : RankEvent => respondTo(rank)
-      case _ : DirectMessageEvent => respondSorry
     }
 
   def respondTo(event : HelloEvent) : MessageData = {
