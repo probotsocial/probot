@@ -49,12 +49,6 @@ object ProbotResource {
 class ProbotResource extends BasicRestServletGroup {
 
   import ProbotResource._
-//
-//  @RestHook(HookEvent.POST_INIT_CHILD_FIRST)
-//  def onPostInit()= {
-//    val accountActivityResource = getContext.getChildResource("twitter").getChildResource("activity").asInstanceOf[AccountActivityResource]
-//    accountActivityResource.connection()
-//  }
 
   @RestHook(HookEvent.PRE_CALL)
   def onPreCall(req : RestRequest) = {
@@ -63,16 +57,12 @@ class ProbotResource extends BasicRestServletGroup {
       xrequestid = generateRequestId(req)
       req.getHeaders.put("X-Request-Id", xrequestid)
     }
-    //val requestJson = logSerializer.serialize()
-    log(Level.INFO, requestMsg, xrequestid, req.toString)
   }
 
   @RestHook(HookEvent.POST_CALL)
   def onPostCall(req : RestRequest, res : RestResponse) = {
     val xrequestid = req.getHeader("X-Request-Id")
     res.setHeader("X-Request-Id", xrequestid)
-    //val responseJson = logSerializer.serialize()
-    log(Level.INFO, responseMsg, xrequestid, res.getStatus.toString)
   }
 
   def baseActivity(req : RestRequest) : Activity = new Activity()
