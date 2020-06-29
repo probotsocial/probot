@@ -3,7 +3,7 @@ version: '3'
 services:
 
   app:
-    image: "probot/app:latest"
+    image: "probotsocial/app:latest"
     container_name: app
     build:
       context: .
@@ -18,18 +18,20 @@ services:
 
   livy:
     container_name: livy
-    image: "probot/apache-livy:latest"
+    image: "probotsocial/livy:latest"
     ports:
       - 8998:8998
+      - 8999:4040
     volumes:
       - "$WORKDIR:/workdir"
-      - "$WORKDIR/dist:/jars"
+      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/src/livy/apache-livy-0.7.0-incubating-bin/repl_2.11-jars/probot-jar-with-dependencies.jar"
+      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/jars/probot-jar-with-dependencies.jar"
     links:
       - "postgres:postgres"
 
   microservice:
     container_name: microservice
-    image: "probot/microservice:latest"
+    image: "probotsocial/microservice:latest"
     ports:
       - 10000:10000
     links:
