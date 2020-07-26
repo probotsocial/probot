@@ -4,7 +4,6 @@ services:
 
   app:
     image: "probotsocial/app:latest"
-    container_name: app
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,7 +16,6 @@ services:
       - CHOKIDAR_USEPOLLING=true
 
   livy:
-    container_name: livy
     image: "probotsocial/livy:latest"
     ports:
       - 8998:8998
@@ -30,7 +28,6 @@ services:
       - "postgres:postgres"
 
   microservice:
-    container_name: microservice
     image: "probotsocial/microservice:latest"
     ports:
       - 10000:10000
@@ -44,16 +41,18 @@ services:
     image: "wernight/ngrok:latest"
     ports:
       - 4040:4040
-      - 8080:8080
+      - 8000:8000
     links:
+      - "app:app"
       - "microservice:microservice"
-    environment:
-      - NGROK_AUTH
-      - NGROK_SUBDOMAIN
-      - NGROK_PORT=microservice:10000
+      - "postgrest:postgrest"
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/ngrok.yml:/ngrok.yml"
+    command: "ngrok start -config=/ngrok.yml -all"
 
   postgres:
-    image: "postgres:latest"
+    image: "postgres:11"
     ports:
       - 5432:5432
     environment:
@@ -69,3 +68,14 @@ services:
       - "postgres:postgres"
     volumes:
       - "$WORKDIR/postgrest.conf:/etc/postgrest.conf"
+
+  zeppelin:
+    image: "apache/zeppelin:0.9.0"
+    ports:
+      - 8890:8080
+    links:
+      - "livy:livy"
+      - "postgres:postgres"
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/jars/probot-jar-with-dependencies.jar"
