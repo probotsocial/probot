@@ -12,8 +12,10 @@ class WebhookEventsConsumer extends Actor with ActorLogging {
   override def postStop(): Unit = log.info("WebhookEventsConsumer actor stopped")
 
   lazy val directMessageEventConsumer: ActorRef = context.actorOf(Props[DirectMessageEventConsumer])
+  lazy val directMessageEventPersister: ActorRef = context.actorOf(Props[DirectMessageEventPersister])
 
   def processDirectMessageEvent(event: DirectMessageEvent) = {
+    directMessageEventPersister ! event
     directMessageEventConsumer ! event
   }
 

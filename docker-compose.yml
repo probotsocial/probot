@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+
+  app:
+    image: "probotsocial/app:latest"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - 80:80
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  livy:
+    image: "probotsocial/livy:latest"
+    ports:
+      - 8998:8998
+      - 8999:4040
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/src/livy/apache-livy-0.7.0-incubating-bin/repl_2.11-jars/probot-jar-with-dependencies.jar"
+      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/jars/probot-jar-with-dependencies.jar"
+    links:
+      - "postgres:postgres"
+
+  microservice:
+    image: "probotsocial/microservice:latest"
+    ports:
+      - 10000:10000
+    links:
+      - "postgrest:postgrest"
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/microservice.conf:/application.conf"
+
+  ngrok:
+    image: "wernight/ngrok:latest"
+    ports:
+      - 4040:4040
+      - 8000:8000
+    links:
+      - "app:app"
+      - "microservice:microservice"
+      - "postgrest:postgrest"
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/ngrok.yml:/ngrok.yml"
+    command: "ngrok start -config=/ngrok.yml -all"
+
+  postgres:
+    image: "postgres:11"
+    ports:
+      - 5432:5432
+    environment:
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - "$WORKDIR/volumes/postgres:/var/lib/postgresql/data"
+
+  postgrest:
+    image: "postgrest/postgrest:latest"
+    ports:
+      - 5000:3000
+    links:
+      - "postgres:postgres"
+    volumes:
+      - "$WORKDIR/postgrest.conf:/etc/postgrest.conf"
+
+  zeppelin:
+    image: "apache/zeppelin:0.9.0"
+    ports:
+      - 8890:8080
+    links:
+      - "livy:livy"
+      - "postgres:postgres"
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/jars/probot-jar-with-dependencies.jar"

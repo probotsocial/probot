@@ -5,7 +5,10 @@ import java.util.logging.Level
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.juneau.json.JsonSerializerBuilder
-import org.apache.juneau.microservice.Resource
+import org.apache.juneau.rest.BasicRestServlet
+import org.apache.juneau.rest.BasicRestServletGroup
+import org.apache.juneau.rest.annotation.HtmlDoc
+import org.apache.juneau.rest.annotation.RestResource
 import org.apache.juneau.rest.annotation.{HookEvent, RestHook}
 import org.apache.juneau.rest.{RestRequest, RestResponse}
 import org.apache.streams.pojo.json.Activity
@@ -20,7 +23,6 @@ object ProbotResource {
   val responseMsg = "{0} {1}"
 
   val logSerializer = new JsonSerializerBuilder()
-    .abridged(true)
     .detectRecursions(true)
     .ignoreRecursions(true)
     .build()
@@ -30,7 +32,21 @@ object ProbotResource {
   }
 }
 
-class ProbotResource extends Resource {
+@RestResource(
+  defaultRequestHeaders = Array("Accept: text/html"),
+  defaultResponseHeaders = Array("Content-Type: text/html"),
+  htmldoc=new HtmlDoc(
+    header=Array("Probot"),
+    footer=Array("ASF 2.0 License")
+  ),
+  path = "/probot",
+  title = Array("probot"),
+  description = Array("probot"),
+  children = Array(
+    classOf[TwitterResource]
+  )
+)
+class ProbotResource extends BasicRestServletGroup {
 
   import ProbotResource._
 
@@ -41,16 +57,12 @@ class ProbotResource extends Resource {
       xrequestid = generateRequestId(req)
       req.getHeaders.put("X-Request-Id", xrequestid)
     }
-    //val requestJson = logSerializer.serialize()
-    log(Level.INFO, requestMsg, xrequestid, req.toString)
   }
 
   @RestHook(HookEvent.POST_CALL)
   def onPostCall(req : RestRequest, res : RestResponse) = {
     val xrequestid = req.getHeader("X-Request-Id")
     res.setHeader("X-Request-Id", xrequestid)
-    //val responseJson = logSerializer.serialize()
-    log(Level.INFO, responseMsg, xrequestid, res.getStatus.toString)
   }
 
   def baseActivity(req : RestRequest) : Activity = new Activity()

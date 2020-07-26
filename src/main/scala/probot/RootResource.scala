@@ -1,13 +1,12 @@
 package probot
 
 import java.net.{URI, URL}
+
 import javax.servlet.ServletException
-
 import akka.actor.ActorSystem
-
 import com.typesafe.config.Config
 import org.apache.http.client.utils.URIBuilder
-import org.apache.juneau.microservice.ResourceGroup
+import org.apache.juneau.rest.BasicRestServletGroup
 import org.apache.juneau.rest.annotation.{HtmlDoc, RestResource}
 import org.apache.streams.config.StreamsConfigurator
 
@@ -20,7 +19,10 @@ object RootResource {
   def asUri(config : Config) : URI = {
     val uri = new URIBuilder()
         .setScheme(config.getString("scheme"))
+        .setUserInfo(config.getString("username"), config.getString("password"))
         .setHost(config.getString("host"))
+        .setPort(config.getInt("port"))
+        .setPath(config.getString("path"))
         .build()
     uri
   }
@@ -35,9 +37,13 @@ object RootResource {
     footer=Array("ASF 2.0 License")
   ),
   path = "/",
-  title = "Probot",
-  description = "Probot"
+  title = Array("Home"),
+  description = Array("Home"),
+  children = Array(
+    classOf[ConfigurationResource],
+    classOf[ProbotResource]
+  )
 )
-class RootResource extends ResourceGroup {
+class RootResource extends BasicRestServletGroup {
 
 }

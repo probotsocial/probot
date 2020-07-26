@@ -4,3 +4,10 @@
 /src/test/resources/probot.jks
 *.iml
 target
+/.idea
+/.DS_Store
+/package-lock.json
+/node_modules
+/build
+/volumes
+/yarn.lock

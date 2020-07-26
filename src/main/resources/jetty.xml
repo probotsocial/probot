@@ -8,7 +8,7 @@
             <Item>
                 <New class="org.eclipse.jetty.server.ServerConnector">
                     <Arg><Ref refid="Server"/></Arg>
-                    <Set name="port">8000</Set>
+                    <Set name="port">10000</Set>
                 </New>
             </Item>
         </Array>

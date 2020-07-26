@@ -1,129 +1,132 @@
 # probot
 
-Profile Bot (aka **probot**) is a software package you can run provide insights into your twitter activity stream and social graph with simple reports.
+Profile Bot (aka **probot**) is a software package you can run to manage your social media accounts programatically.
  
-**probot** can bind to your incoming direct messages using the twitter account activity API, watch for messages that match preset patterns, and reply with short messages and links to report endpoints.
+**probot** can send direct messages to lists of followers, and reply to direct messages you receive.
 
 ## basics
 
-**probot** is implemented with [Scala](https://scala.io) 
+**probot** back-end is implemented with [Scala](https://scala.io)
 and packaged with [Apache Maven](http://maven.apache.org).
 
-Probot has the following essential dependencies:
- * [Akka](http://akka.io "http://akka.io")
-   Asychronous messaging between probot components
- * [Apache Juneau](http://juneau.incubator.apache.org "http://juneau.incubator.apache.org") 
-   HTTP microservice (based on Jetty) and data marshalling libraries 
- * [Apache Streams](http://streams.apache.org "http://streams.apache.org") 
-   Twitter SDK, pojos, and connectivity
-   
+**probot** front-end is implemented with [Node.js](http://node.js)
+and packaged with [Yarn](http://maven.apache.org).
+
 ## building
 
-At the moment **probot** builds and runs on snapshots (*this will change shortly*).
+Run the following to build the back-end from source.
 
-Check out probot and run the following to build the code.  This should pull snapshot artifacts from repository.apache.org
-
-    mvn clean package
+    mvn install
     
-You may want to check out, build, and install the latest snapshot of Juneau and Streams (following those projects' instructions) if you want to add features that require modifications to those libraries.
+Run the following to build the front-end from source.
+
+    yarn install
+
+## preparation
+
+Run the following to prepare the back-end for docker deployment.
+
+    mvn clean package docker:build
+
+Run the following to prepare the front-end for docker deployment.
+
+    docker-compose build
+
+You must ensure the following ports are not in use on your system, or modify docker-compose.yml and potentially other config files to change them:
+
+  - 3000 (app)
+  - 5000 (postgrest)
+  - 5432 (postgres)
+  - 8998 (livy)
+  - 10000 (microservice)
+
+## configuration
+
+**probot** must be configured before launch with your social credentials.
+
+Configuration file by default are expected in the working directory, same as the project root directory.
+
+Alternative working directory or configuration file locations are possible with tweaks to docker-compose.yml.
+
+Files you must edit:
+  * .env
+    Supply your own values for
+    - NGROK_AUTH
+    - NGROK_PASSWORD
+    - NGROK_SUBDOMAIN
+    - NGROK_USERNAME
+  * microservice.conf
+    Supply your own values for
+    - twitter.environment
+    - twitter.oauth.*
+    - server.hostname
+  * collect-followers.conf
+    Supply your own values for
+    - TwitterFollowingConfiguration.info
+    - TwitterFollowingConfiguration.max_pages
 
 ## running
 
-From the probot source directory, start probot with:
+Run the following to deploy the stack to local docker environment.
 
-    java -Dconfig.file=probot.conf -cp dist/probot-jar-with-dependencies.jar org.apache.juneau.microservice.RestMicroservice application.cfg
+    export WORKDIR=`pwd`
+    docker-compose up -d
 
-probot.conf should be a hocon file similar to src/test/resources/example.conf
+## spot check
 
-Twitter is fairly strict about the SSL properties of your endpoint.
+Check that basic twitter connectivity is established by inspecting your twitter webhook.
 
-[Ngrok](https://ngrok.com "https://ngrok.com") is an easy way to ensure your probot is compliant.
+In a browser navigate to 'https://<subdomain>.ngrok.io/probot/twitter/webhook'
 
-## features
+(Natually replace with your own configured ngrok subdomain.)
 
-/TopDomains
+If everything is working you will see 'subscribed true' as final status.
 
-    rank domains by the number of link profile shared
-    
-/TopHashtags
+## setup
 
-    rank hashtags by the number of posts by profile that used them
-    
-/TopMentions
+Probot should launch with an active twitter account_activity connection, but a blank database.
 
-    rank users by the number of times profile mentioned them
-    
-/TopPosts
+Once basic connectivity is confirmed, the database must be backfilled manually to reflect existing followers.
 
-    rank posts by profile according to metrics:
-        * most favorites
-        * most retweets
-        
-/TopFollowing
+This is a two-step process performed via shell (for now).
 
-    rank friends or followers of profile according to metrics:
-        * most favorites
-        * most followers
-        * most friends
-        * most lists
-        * most posts
+  1. Retrieve all followers programatically to followers.jsonl file.
 
-## challenges/opportunities
+      ``` docker exec -it livy java -cp /workdir/dist/probot-jar-with-dependencies.jar org.apache.streams.twitter.provider.TwitterFollowingProvider /workdir/collect-followers.conf /workdir/collect-followers.jsonl ```
 
-**probot** is currently hard-wired to use the timeline and network of the credentialed account.
+  2. Load followers.jsonl to profiles table.
 
-- *Challenge*: Casual users probably won't run a bot server, but will be curious about their own accounts.
-- *Opportunity*: Teach **probot** to generate reports about accounts other than itself.
+     ``` docker exec -it livy /usr/local/spark-2.4.6-bin-hadoop2.7/bin/spark-shell --packages org.postgresql:postgresql:9.4.1211 ```
 
-**probot** creates in-memory datasets at the moment a dataset is accessed.
+     Copy the full contents of 'load-followers.scala' and paste it into session.
 
-- *Challenge*: Using java objects on heap is expensive, limits the absolute size of the data.
-- *Opportunity*: Persist raw data to a folder than can be mounted on start-up.
-- *Opportunity*: Add [Apache Spark](http://spark.apache.org) to the stack and build reports with computations over DataFrames.
+## dependencies
 
-**probot** can only access 3200 posts per user, due to twitter API limitations.
+Probot back-end has the following essential library dependencies:
 
-- *Challenge*: Prolific twitter users has much longer timelines than this.
-- *Opportunity*: Add support for using downloaded twitter archives, in conjunction with API connection.
+ * [Apache Juneau](http://juneau.incubator.apache.org "http://juneau.incubator.apache.org")
+   HTTP microservice (based on Jetty) and data marshalling libraries
+ * [Apache Spark](http://spark.apache.org "http://spark.apache.org")
+   Data engineering / data science framework supporting batch and Stream processing
+ * [Apache Streams](http://streams.apache.org "http://streams.apache.org")
+   Twitter SDK, pojos, and connectivity
 
-**probot** has access to only one twitter API key.
+Probot front-end has the following essential dependencies:
 
-- *Challenge*: API throughput and rate-limits constrain what can be done on-demand under this model
-- *Opportunity*: Allow operaters with access to multiple keys to provide more than one.
-- *Opportunity*: Report over available data, while expanding available data as a background process.
-- *Opportunity*: Encourage users interacting with the bot to oauth their accounts to the probot app.
+ * [ReactJS](https://reactjs.org/ "https://reactjs.org/")
+   A JavaScript library for building user interfaces
+ * [React Admin](https://marmelab.com/react-admin/ "https://marmelab.com/react-admin/")
+   A Web Framework for B2B applications
+ * [Material UI](https://material-ui.com/ "https://material-ui.com/")
+   React components for faster and easier web development.
 
-**probot**'s code base is single module and several classes are approaching unwieldy.
+Probot relies on several supporting run-time dependencies:
 
-- *Challenge*: Make it easier to add capabilities to **probot** without needing to build from source.
-- *Opportunity*: Define key traits in the core module and discover all implementing classes on the classpath via reflection.
-
-**probot**'s plain-language interface is only available via Direct Message.
-
-- *Challenge*: Not everyone who might want to interact with your probot will be on twitter or be logged in on every device.
-- *Opportunity*: Add a feature to the web interface that provides a 'command bar' (with auto-complete?) 
-
-**probot**'s reporting on Top Domains is sub-optimal.
-
-- *Challenge*: Url shorteners are ubiquitous in tweet content and twitter's API expanded_url does not expand most of them.
-- *Opportunity*: Use juneau to traverse redirect chains of the links in each post to find the original domain.
-
-**probot** only integrates with Twitter.
-
-- *Challenge*: Most internet users maintain profiles on multiple networks.
-- *Opportunity*: Switch the canonical profile format from Twitter API to Activity Streams.
-- *Opportunity*: Use additional providers from [Apache Streams](http://streams.apache.org), adding messaging support.
-
-**probot**'s pattern matching on messages is fairly rudimentary.
-
-- *Challenge*: It's not obvious how one should interact with **probot** to take advantage of its capabilities.
-- *Opportunity*: Create a structured menu / help system similar to 'man' to instruct new engagers.
-- *Opportunity*: Write better documentation.
-
-- *Challenge*: Iterate toward a robust plain-language interface.
-- *Opportunity*: Use sentence / grammer parsing by [Apache OpenNLP](http://opennlp.apache.org) to recognize event case.
-- *Opportunity*: Add a step whereby **probot** responds to the user repeating what it thinks it was asked.
-- *Opportunity*: Seek confirmation and/or suggest i.e. 'did you mean ...'.
-
+ * [Livy](https://livy.apache.org/ "https://livy.apache.org")
+   A REST Service for Apache Spark
+ * [Postgresql](https://www.postgresql.org/ "https://www.postgresql.org/")
+   The World's Most Advanced Open Source Relational Database
+ * [Postgrest](https://postgrest.org "http://www.postgrest.org")
+   PostgREST is a standalone web server that turns your PostgreSQL database directly into a RESTful API.
 
 
