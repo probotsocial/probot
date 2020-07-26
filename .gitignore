@@ -8,3 +8,6 @@ target
 /.DS_Store
 /package-lock.json
 /node_modules
+/build
+/volumes
+/yarn.lock
