@@ -5,12 +5,14 @@ const httpClient = fetchUtils.fetchJson
 // const Client = require('node-rest-client').Client;
 // const client = new Client ();
 
-const postgrestDataProvider = postgrestClient('http://localhost:5000')
+const microserviceUrl = process.env.MICROSERVICE_URL || 'http://localhost:10000'
+const postgrestUrl = process.env.POSTGREST_URL || 'http://localhost:5000'
+const postgrestDataProvider = postgrestClient(postgrestUrl)
 
 const hybridDataProvider = {
     ...postgrestDataProvider,
     updateMany: (resource, params) => {
-        httpClient('http://localhost:10000/probot/twitter/directmessage', {
+        httpClient(microserviceUrl.concat('/probot/twitter/directmessage'), {
             body: JSON.stringify(params),
             headers: new Headers({
              Accept: 'application/json',

@@ -12,6 +12,8 @@ import { ProfileList } from "./main/js/profiles";
 import { OptInList } from "./main/js/optins";
 import './App.css';
 
+console.log(require('dotenv').config())
+
 const LoginPage = () => <Login />;
 
 const theme = createMuiTheme({
@@ -30,6 +32,7 @@ const App = () => {
           dataProvider={dataProvider}
       >
           <Resource name="followers" label="Followers" list={ProfileList} show={ShowGuesser}/>
+          <Resource name="friends" label="Following" list={ProfileList} show={ShowGuesser}/>
           <Resource name="messages" label="Messages" list={MessageList} show={ShowGuesser}/>
           <Resource name="optins" label="Opt-Ins" list={OptInList} show={ShowGuesser}/>
       </Admin>
