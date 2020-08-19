@@ -1,0 +1,34 @@
+FROM apache/zeppelin:0.9.0
+
+ENV FLINK_VERSION=1.11.1
+ENV HADOOP_VERSION=2.7.7
+ENV SCALA_VERSION=2.11
+ENV SPARK_VERSION=2.4.6
+ENV SPARK_HADOOP_VERSION=2.7
+
+USER root
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && \
+    apt-get install -y krb5-user libpam-krb5 curl unzip wget grep sed vim tzdata && \
+    apt-get clean
+
+USER 1000
+
+RUN rm -rf /flink
+RUN wget https://www-us.apache.org/dist/flink/flink-${FLINK_VERSION}/flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz
+RUN tar zxvf flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz
+RUN mv flink-${FLINK_VERSION} flink
+RUN rm flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz
+
+RUN rm -rf /hadoop
+RUN wget https://www-us.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz
+RUN tar zxvf hadoop-${HADOOP_VERSION}.tar.gz
+RUN mv hadoop-${HADOOP_VERSION} hadoop
+RUN rm hadoop-${HADOOP_VERSION}.tar.gz
+
+RUN rm -rf /spark
+RUN wget https://www-us.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION}.tgz
+RUN tar zxvf spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION}.tgz
+RUN mv spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION} spark
+RUN rm spark-${SPARK_VERSION}-bin-hadoop${SPARK_HADOOP_VERSION}.tgz

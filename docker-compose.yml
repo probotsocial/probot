@@ -6,50 +6,28 @@ services:
     image: "probotsocial/app:latest"
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: src/main/docker/app
     volumes:
       - '.:/app'
       - '/app/node_modules'
     ports:
-      - 80:80
+      - 8080:80
+    links:
+      - "microservice:microservice"
+      - "postgrest:postgrest"
     environment:
       - CHOKIDAR_USEPOLLING=true
-
-  livy:
-    image: "probotsocial/livy:latest"
-    ports:
-      - 8998:8998
-      - 8999:4040
-    volumes:
-      - "$WORKDIR:/workdir"
-      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/src/livy/apache-livy-0.7.0-incubating-bin/repl_2.11-jars/probot-jar-with-dependencies.jar"
-      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/jars/probot-jar-with-dependencies.jar"
-    links:
-      - "postgres:postgres"
+      - MICROSERVICE_URL=http://localhost:10000
+      - POSTGREST_URL=http://localhost:5000
 
   microservice:
     image: "probotsocial/microservice:latest"
     ports:
       - 10000:10000
-    links:
-      - "postgrest:postgrest"
+      - 2552:2552
     volumes:
       - "$WORKDIR:/workdir"
       - "$WORKDIR/microservice.conf:/application.conf"
-
-  ngrok:
-    image: "wernight/ngrok:latest"
-    ports:
-      - 4040:4040
-      - 8000:8000
-    links:
-      - "app:app"
-      - "microservice:microservice"
-      - "postgrest:postgrest"
-    volumes:
-      - "$WORKDIR:/workdir"
-      - "$WORKDIR/ngrok.yml:/ngrok.yml"
-    command: "ngrok start -config=/ngrok.yml -all"
 
   postgres:
     image: "postgres:11"
@@ -57,6 +35,7 @@ services:
       - 5432:5432
     environment:
       - PGDATA=/var/lib/postgresql/data
+      - POSTGRES_PASSWORD=postgres
     volumes:
       - "$WORKDIR/volumes/postgres:/var/lib/postgresql/data"
 
@@ -70,12 +49,58 @@ services:
       - "$WORKDIR/postgrest.conf:/etc/postgrest.conf"
 
   zeppelin:
-    image: "apache/zeppelin:0.9.0"
+    image: "probotsocial/zeppelin:latest"
+    build:
+      context: .
+      dockerfile: src/main/docker/zeppelin
     ports:
       - 8890:8080
     links:
-      - "livy:livy"
-      - "postgres:postgres"
+      - "jobmanager:jobmanager"
+    environment:
+      - "FLINK_HOME=/zeppelin/flink"
+      - "HADOOP_CONF_DIR=/zeppelin/hadoop"
+      - "SPARK_HOME=/zeppelin/spark"
+      - "SPARK_SUBMIT_OPTIONS=--jars /jars/probot-pipelines-jar-with-dependencies.jar"
     volumes:
       - "$WORKDIR:/workdir"
-      - "$WORKDIR/dist/probot-jar-with-dependencies.jar:/jars/probot-jar-with-dependencies.jar"
+      - "$WORKDIR/data:/data"
+      - "$WORKDIR/dist:/jars"
+      - "$WORKDIR/src/main/notebooks:/zeppelin/notebook"
+
+  jobmanager:
+    image: flink:1.11.1-scala_2.11-java8
+    ports:
+      - "6123:6123"
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - "HADOOP_CLASSPATH=/hadoop27/etc/hadoop:/hadoop27/share/hadoop/common/lib/*:/hadoop27/share/hadoop/common/*:/hadoop27/share/hadoop/hdfs:/hadoop27/share/hadoop/hdfs/lib/*:/hadoop27/share/hadoop/hdfs/*:/hadoop27/share/hadoop/yarn/lib/*:/hadoop27/share/hadoop/yarn/*:/hadoop27/share/hadoop/mapreduce/lib/*:/hadoop27/share/hadoop/mapreduce/*:/hadoop27/lib:/contrib/capacity-scheduler/*.jar"
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        jobmanager.memory.process.size: 4000Mb
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/data:/data"
+#      - "/Users/Shared/Dropbox/git/streams/streams-examples/streams-examples-flink/flink-twitter-collection/dist/streams-example-flink-twitter-collection-jar-with-dependencies.jar:/jars/streams-example-flink-twitter-collection-jar-with-dependencies.jar"
+#      - "/Users/steveblackmon/Tools/hadoop-2.7.3:/hadoop27"
+
+  taskmanager:
+    image: flink:1.11.1-scala_2.11-java8
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    links:
+      - "jobmanager:jobmanager"
+    environment:
+      - "HADOOP_CLASSPATH=/hadoop27/etc/hadoop:/hadoop27/share/hadoop/common/lib/*:/hadoop27/share/hadoop/common/*:/hadoop27/share/hadoop/hdfs:/hadoop27/share/hadoop/hdfs/lib/*:/hadoop27/share/hadoop/hdfs/*:/hadoop27/share/hadoop/yarn/lib/*:/hadoop27/share/hadoop/yarn/*:/hadoop27/share/hadoop/mapreduce/lib/*:/hadoop27/share/hadoop/mapreduce/*:/hadoop27/lib:/contrib/capacity-scheduler/*.jar"
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 4
+        taskmanager.memory.process.size: 8000Mb
+    volumes:
+      - "$WORKDIR:/workdir"
+      - "$WORKDIR/data:/data"
+#      - "/Users/steveblackmon/Tools/hadoop-2.7.3:/hadoop27"
