@@ -17,19 +17,19 @@
     <New id="context" class="org.eclipse.jetty.servlet.ServletContextHandler">
         <Set name="contextPath">/</Set>
         <Call name="addServlet">
-            <Arg>probot.RootResource</Arg>
+            <Arg>social.probot.microservice.RootResource</Arg>
             <Arg>/*</Arg>
         </Call>
         <Call name="addServlet">
-            <Arg>probot.ConfigurationResource</Arg>
+            <Arg>social.probot.microservice.ConfigurationResource</Arg>
             <Arg>/configuration</Arg>
         </Call>
         <Call name="addServlet">
-            <Arg>probot.TwitterResource</Arg>
+            <Arg>social.probot.microservice.TwitterResource</Arg>
             <Arg>/twitter</Arg>
         </Call>
         <Call name="addServlet">
-            <Arg>probot.WebhookResource</Arg>
+            <Arg>social.probot.microservice.WebhookResource</Arg>
             <Arg>/twitter/webhook</Arg>
         </Call>
         <Set name="sessionHandler">
