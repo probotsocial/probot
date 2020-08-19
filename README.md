@@ -37,33 +37,25 @@ You must ensure the following ports are not in use on your system, or modify doc
   - 3000 (app)
   - 5000 (postgrest)
   - 5432 (postgres)
-  - 8998 (livy)
+  - 6123 (jobmanager)
+  - 8081 (jobmanager)
+  - 8890 (zeppelin)
   - 10000 (microservice)
 
 ## configuration
 
 **probot** must be configured before launch with your social credentials.
 
-Configuration file by default are expected in the working directory, same as the project root directory.
-
-Alternative working directory or configuration file locations are possible with tweaks to docker-compose.yml.
-
-Files you must edit:
-  * .env
-    Supply your own values for
-    - NGROK_AUTH
-    - NGROK_PASSWORD
-    - NGROK_SUBDOMAIN
-    - NGROK_USERNAME
-  * microservice.conf
-    Supply your own values for
+Configuration you must edit:
+  * src/main/resources/conf/twitter.conf
     - twitter.environment
     - twitter.oauth.*
     - server.hostname
-  * collect-followers.conf
-    Supply your own values for
-    - TwitterFollowingConfiguration.info
-    - TwitterFollowingConfiguration.max_pages
+
+Configuration you may want to edit:
+  * src/main/resources/conf/collect-follower-ids.conf
+    - max_items
+    - max_pages
 
 ## running
 
@@ -72,33 +64,30 @@ Run the following to deploy the stack to local docker environment.
     export WORKDIR=`pwd`
     docker-compose up -d
 
+## connectivity
+
+You will not be able to establish real-time connectivity with twitter unless you 
+expose microservice to the internet with a high-quality SSL configuration.
+
+How to do this is beyond the scope of this document.
+
 ## spot check
 
-Check that basic twitter connectivity is established by inspecting your twitter webhook.
+Check that real-time twitter connectivity is established by inspecting your twitter webhook.
 
-In a browser navigate to 'https://<subdomain>.ngrok.io/probot/twitter/webhook'
-
-(Natually replace with your own configured ngrok subdomain.)
+In a browser navigate to 'https://<domain>/probot/twitter/webhook'
 
 If everything is working you will see 'subscribed true' as final status.
 
 ## setup
 
-Probot should launch with an active twitter account_activity connection, but a blank database.
+Probot should launch with an active real-time twitter account_activity connection, but a blank database.
 
-Once basic connectivity is confirmed, the database must be backfilled manually to reflect existing followers.
+Once real-time connectivity is confirmed, the database must be backfilled manually to reflect existing followers.
 
-This is a two-step process performed via shell (for now).
+This is a multi-step process managed via zeppelin.
 
-  1. Retrieve all followers programatically to followers.jsonl file.
-
-      ``` docker exec -it livy java -cp /workdir/dist/probot-jar-with-dependencies.jar org.apache.streams.twitter.provider.TwitterFollowingProvider /workdir/collect-followers.conf /workdir/collect-followers.jsonl ```
-
-  2. Load followers.jsonl to profiles table.
-
-     ``` docker exec -it livy /usr/local/spark-2.4.6-bin-hadoop2.7/bin/spark-shell --packages org.postgresql:postgresql:9.4.1211 ```
-
-     Copy the full contents of 'load-followers.scala' and paste it into session.
+See twitter-setup.md for more details.
 
 ## dependencies
 
