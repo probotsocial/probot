@@ -6,11 +6,11 @@ import SendMessageButton from './SendMessageButton'
 
 export const ProfileFilter = (props) => (
     <Filter {...props}>
-        <TextInput label="Screen Name" source="apst_handle" allowEmpty />
-        <SearchInput label="Display Name" source="as_name@ilike" allowEmpty />
-        <SearchInput label="Bio" source="as_summary@ilike" allowEmpty />
-        <SearchInput label="Location" source="as_location_name@ilike" allowEmpty />
-        <NullableBooleanInput label="Following" source="twitter_following" displayNull />
+        <TextInput label="Screen Name" source="screen_name" allowEmpty />
+        <SearchInput label="Display Name" source="name@ilike" allowEmpty />
+        <SearchInput label="Bio" source="description@ilike" allowEmpty />
+        <SearchInput label="Location" source="location@ilike" allowEmpty />
+        <NullableBooleanInput label="Following" source="following" displayNull />
     </Filter>
 );
 
@@ -18,16 +18,16 @@ export const ProfileList = props => (
     <List {...props} perPage={100} filters={<ProfileFilter/>} bulkActionButtons={<SendMessageButton />} >
         <Datagrid rowClick="show">
             <TextField source="id" label="ID"/>
-            <TextField source="apst_handle" label="Screen Name"/>
-            <TextField source="as_name" label="Display Name"/>
-            <TextField source="as_location_name" label="Location"/>
-            <UrlField source="as_url" label="URL" />
-            <BooleanField source="twitter_following" label="Following" />
-            <NumberField source="apst_followers" label="Followers" />
-            <NumberField source="apst_friends" label="Friends" />
-            <NumberField source="apst_lists" label="Lists" />
-            <NumberField source="apst_posts" label="Posts" />
-            <NumberField source="apst_likes" label="Likes" />
+            <TextField source="screen_name" label="Screen Name"/>
+            <TextField source="name" label="Display Name"/>
+            <TextField source="location" label="Location"/>
+            <UrlField source="url" label="URL" />
+            <BooleanField source="following" label="Following" />
+            <NumberField source="followers_count" label="Followers" />
+            <NumberField source="friends_count" label="Friends" />
+            <NumberField source="lists_count" label="Lists" />
+            <NumberField source="statuses_count" label="Posts" />
+            <NumberField source="favourites_count" label="Likes" />
         </Datagrid>
     </List>
 );
