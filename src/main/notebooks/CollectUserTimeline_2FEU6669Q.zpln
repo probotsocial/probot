@@ -1,0 +1,121 @@
+{
+  "paragraphs": [
+    {
+      "text": "%spark\nimport com.typesafe.config.ConfigFactory\nimport com.typesafe.config.ConfigValueFactory\nimport java.io.File\nimport java.io.PrintWriter\nimport org.apache.streams.config.ComponentConfigurator\nimport org.apache.streams.config.StreamsConfigurator\nimport scala.collection.JavaConverters._\nimport scala.collection.JavaConversions._\nimport scala.collection.mutable._\n\nval configBase \u003d ConfigFactory.parseFile(new File(\"/workdir/src/main/resources/conf/FlinkTwitterPostsPipeline.template.conf\"))\nval config \u003d configBase.withValue(\"ENDPOINT\", ConfigValueFactory.fromAnyRef(\"user_timeline\"))\nval configHocon \u003d config.resolve.root.render\n\nnew PrintWriter(s\"/data/CollectUserTimeline.conf\") { write(configHocon); close }\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-18 22:39:21.217",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionSupport": true,
+          "completionKey": "TAB"
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597790097917_-891015848",
+      "id": "paragraph_1597790097917_-891015848",
+      "dateCreated": "2020-08-18 22:34:57.917",
+      "dateStarted": "2020-08-18 22:39:21.226",
+      "dateFinished": "2020-08-18 22:39:21.561",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%sh\n/zeppelin/flink/bin/flink run -m jobmanager:8081 -p 2 \\\n    -c org.apache.streams.examples.flink.twitter.collection.FlinkTwitterPostsPipeline \\\n    /jars/probot-pipelines-jar-with-dependencies.jar \\\n    file:///data/CollectUserTimeline.conf\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-18 22:39:35.070",
+      "config": {
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/sh",
+        "fontSize": 9.0,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1596564128984_1685317148",
+      "id": "paragraph_1596482264838_1019833188",
+      "dateCreated": "2020-08-04 18:02:08.984",
+      "dateStarted": "2020-08-18 22:39:23.469",
+      "dateFinished": "2020-08-18 22:39:27.293",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%sh\ncd \"/data/user_timeline.jsonl\"\nfor file in .part-*\ndo\n   mv \"$file\" \"$(echo $file | sed \u0027s/^.\\{1\\}//g\u0027)\"\ndone",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-18 22:40:58.485",
+      "config": {
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/sh",
+        "fontSize": 9.0,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1596564128985_-1779855300",
+      "id": "paragraph_1596482420784_-1170137378",
+      "dateCreated": "2020-08-04 18:02:08.985",
+      "dateStarted": "2020-08-18 22:40:58.498",
+      "dateFinished": "2020-08-18 22:40:58.520",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%sh\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-06 10:57:01.779",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1596711421778_-1307716991",
+      "id": "paragraph_1596711421778_-1307716991",
+      "dateCreated": "2020-08-06 10:57:01.778",
+      "status": "READY"
+    }
+  ],
+  "name": "CollectUserTimeline",
+  "id": "2FEU6669Q",
+  "defaultInterpreterGroup": "sh",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

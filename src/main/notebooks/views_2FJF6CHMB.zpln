@@ -1,0 +1,121 @@
+{
+  "paragraphs": [
+    {
+      "text": "%jdbc\nDROP VIEW IF EXISTS followers;\nCREATE VIEW followers AS\nSELECT\n    id,\n    ts,\n    json-\u003e\u003e\u0027name\u0027 AS name,\n    json-\u003e\u003e\u0027description\u0027 AS description,\n    json-\u003e\u003e\u0027url\u0027 AS url,\n    json-\u003e\u003e\u0027location\u0027 AS location,\n    json-\u003e\u003e\u0027screen_name\u0027 AS screen_name,\n    json-\u003e\u003e\u0027followers_count\u0027 AS followers_count,\n    json-\u003e\u003e\u0027friends_count\u0027 AS friends_count,\n    json-\u003e\u003e\u0027favourites_count\u0027 AS favourites_count,\n    json-\u003e\u003e\u0027statuses_count\u0027 AS statuses_count,\n    json-\u003e\u003e\u0027lists_count\u0027 AS lists_count,\n    json-\u003e\u003e\u0027blocking\u0027 AS blocking,\n    json-\u003e\u003e\u0027following\u0027 AS following,\n    json-\u003e\u003e\u0027follow_request_sent\u0027 AS follow_request_sent\nFROM followers_json;\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 18:06:41.833",
+      "config": {
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/text",
+        "fontSize": 9.0,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597858101507_2135935893",
+      "id": "paragraph_1597857685854_-1304404179",
+      "dateCreated": "2020-08-19 17:28:21.507",
+      "dateStarted": "2020-08-19 18:06:41.844",
+      "dateFinished": "2020-08-19 18:06:41.870",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%jdbc\nDROP VIEW IF EXISTS friends;\nCREATE VIEW friends AS\nSELECT\n    id,\n    ts,\n    json-\u003e\u003e\u0027name\u0027 AS name,\n    json-\u003e\u003e\u0027description\u0027 AS description,\n    json-\u003e\u003e\u0027url\u0027 AS url,\n    json-\u003e\u003e\u0027location\u0027 AS location,\n    json-\u003e\u003e\u0027screen_name\u0027 AS screen_name,\n    json-\u003e\u003e\u0027followers_count\u0027 AS followers_count,\n    json-\u003e\u003e\u0027friends_count\u0027 AS friends_count,\n    json-\u003e\u003e\u0027favourites_count\u0027 AS favourites_count,\n    json-\u003e\u003e\u0027statuses_count\u0027 AS statuses_count,\n    json-\u003e\u003e\u0027lists_count\u0027 AS lists_count,\n    json-\u003e\u003e\u0027blocking\u0027 AS blocking,\n    json-\u003e\u003e\u0027following\u0027 AS following,\n    json-\u003e\u003e\u0027follow_request_sent\u0027 AS follow_request_sent\nFROM friends_json;\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 18:06:43.975",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/text"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597858101507_128434246",
+      "id": "paragraph_1597857751865_888891938",
+      "dateCreated": "2020-08-19 17:28:21.507",
+      "dateStarted": "2020-08-19 18:06:43.985",
+      "dateFinished": "2020-08-19 18:06:44.006",
+      "status": "FINISHED"
+    },
+    {
+      "text": "%jdbc\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 17:35:00.453",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/text"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597858372641_1252966571",
+      "id": "paragraph_1597858372641_1252966571",
+      "dateCreated": "2020-08-19 17:32:52.641",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "views",
+  "id": "2FJF6CHMB",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

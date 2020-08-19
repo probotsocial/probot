@@ -1,0 +1,120 @@
+{
+  "paragraphs": [
+    {
+      "text": "import org.apache.spark.sql.SparkSession\nimport org.apache.spark.sql.DataFrame\nfinal val sparkSession \u003d SparkSession.builder().getOrCreate()\nclass Request {\n  val baseDir \u003d \"/data\"\n  val inputPath \u003d \"followers.jsonl\"\n  val inputFormat \u003d \"json\"\n  val jdbcDriver \u003d \"org.postgresql.Driver\"\n  val jdbcUser \u003d \"postgres\"\n  val jdbcPassword \u003d \"postgres\"\n  val jdbcUrl \u003d \"jdbc:postgresql://postgres:5432/postgres\"\n}\nval request \u003d new Request\nval follows_jsons : DataFrame \u003d sparkSession.sqlContext.read.format(\"json\").load(request.baseDir + \"/\" + request.inputPath)\nfollows_jsons.createOrReplaceTempView(\"follows_jsons\")\nval followers_df \u003d follows_jsons.select(\"follower.id\", \"follower\").orderBy(desc(\"follower.status.created_at\")).groupBy(\"id\").agg(first(\"follower\").as(\"follower\"))\nfollowers_df.createOrReplaceTempView(\"followers_df\")\nval followers_json_df \u003d sparkSession.sqlContext.sql(\"\"\"\nselect\n    concat(\u0027twitter:\u0027, follower.id_str) as id,\n    to_json(follower) as json\nfrom followers_df\n\"\"\")\n\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 18:04:40.550",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import org.apache.spark.sql.SparkSession\nimport org.apache.spark.sql.DataFrame\n\u001b[1m\u001b[34msparkSession\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.SparkSession\u001b[0m \u003d org.apache.spark.sql.SparkSession@230f85f0\ndefined class Request\n\u001b[1m\u001b[34mrequest\u001b[0m: \u001b[1m\u001b[32mRequest\u001b[0m \u003d Request@7560112c\n\u001b[1m\u001b[34mfollows_jsons\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m \u003d [followee: struct\u003cid: bigint\u003e, follower: struct\u003ccontributors_enabled: boolean, created_at: string ... 31 more fields\u003e]\n\u001b[1m\u001b[34mfollowers_df\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m \u003d [id: bigint, follower: struct\u003ccontributors_enabled: boolean, created_at: string ... 31 more fields\u003e]\n\u001b[1m\u001b[34mfollowers_json_df\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m \u003d [id: string, json: string]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597855829753_1384814972",
+      "id": "paragraph_1597855829753_1384814972",
+      "dateCreated": "2020-08-19 16:50:29.754",
+      "dateStarted": "2020-08-19 18:04:40.568",
+      "dateFinished": "2020-08-19 18:04:40.989",
+      "status": "FINISHED"
+    },
+    {
+      "text": "val jdbc_options \u003d  Map(\n  \"user\" -\u003e request.jdbcUser,\n  \"password\" -\u003e request.jdbcPassword,\n  \"url\" -\u003e request.jdbcUrl,\n  \"driver\" -\u003e request.jdbcDriver,\n  \"fetchSize\" -\u003e \"100\",\n  \"numPartitions\" -\u003e \"1\"\n)\nval jdbc_properties \u003d new java.util.Properties\njdbc_properties.setProperty(\"driver\", request.jdbcDriver)\njdbc_properties.setProperty(\"user\", request.jdbcUser)\njdbc_properties.setProperty(\"password\", request.jdbcPassword)\njdbc_properties.setProperty(\"stringtype\", \"unspecified\")\nfollowers_json_df.count()\nfollowers_json_df.write.mode(\"append\").jdbc(request.jdbcUrl, \"followers_json\", jdbc_properties)",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 18:06:29.420",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34mjdbc_options\u001b[0m: \u001b[1m\u001b[32mscala.collection.immutable.Map[String,String]\u001b[0m \u003d Map(url -\u003e jdbc:postgresql://postgres:5432/postgres, fetchSize -\u003e 100, driver -\u003e org.postgresql.Driver, user -\u003e postgres, numPartitions -\u003e 1, password -\u003e postgres)\n\u001b[1m\u001b[34mjdbc_properties\u001b[0m: \u001b[1m\u001b[32mjava.util.Properties\u001b[0m \u003d {user\u003dpostgres, stringtype\u003dunspecified, password\u003dpostgres, driver\u003dorg.postgresql.Driver}\n"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597855875248_1590970754",
+      "id": "paragraph_1597855875248_1590970754",
+      "dateCreated": "2020-08-19 16:51:15.248",
+      "dateStarted": "2020-08-19 18:06:29.430",
+      "dateFinished": "2020-08-19 18:06:36.311",
+      "status": "FINISHED"
+    },
+    {
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 17:26:44.522",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597855922016_-1373510817",
+      "id": "paragraph_1597855922016_-1373510817",
+      "dateCreated": "2020-08-19 16:52:02.016",
+      "status": "FINISHED"
+    }
+  ],
+  "name": "LoadFollowers",
+  "id": "2FJSH3ZFQ",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

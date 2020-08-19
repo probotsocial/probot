@@ -1,0 +1,103 @@
+{
+  "paragraphs": [
+    {
+      "text": "DROP SCHEMA IF EXISTS postgres CASCADE;\n\nCREATE SCHEMA IF NOT EXISTS postgres;\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 18:06:22.114",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/text"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597857637845_813698215",
+      "id": "paragraph_1597857637845_813698215",
+      "dateCreated": "2020-08-19 17:20:37.845",
+      "dateStarted": "2020-08-19 18:06:22.126",
+      "dateFinished": "2020-08-19 18:06:22.787",
+      "status": "FINISHED"
+    },
+    {
+      "text": "CREATE TABLE followers_json (\n                                id VARCHAR(255) UNIQUE NOT NULL,\n                                ts TIMESTAMP NOT NULL DEFAULT NOW(),\n                                json JSONB,\n                                PRIMARY KEY (id)\n);\n\nCREATE TABLE friends_json (\n                                id VARCHAR(255) UNIQUE NOT NULL,\n                                ts TIMESTAMP NOT NULL DEFAULT NOW(),\n                                json JSONB,\n                                PRIMARY KEY (id)\n);\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-19 18:06:24.768",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/text"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597857685854_-1304404179",
+      "id": "paragraph_1597857685854_-1304404179",
+      "dateCreated": "2020-08-19 17:21:25.854",
+      "dateStarted": "2020-08-19 18:06:24.779",
+      "dateFinished": "2020-08-19 18:06:24.843",
+      "status": "FINISHED"
+    },
+    {
+      "user": "anonymous",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597857751865_888891938",
+      "id": "paragraph_1597857751865_888891938",
+      "dateCreated": "2020-08-19 17:22:31.865",
+      "status": "READY"
+    }
+  ],
+  "name": "schema",
+  "id": "2FFD4X1F1",
+  "defaultInterpreterGroup": "jdbc",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}
