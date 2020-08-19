@@ -1,4 +1,4 @@
-package probot
+package social.probot.actors
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.juneau.ObjectList

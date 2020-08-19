@@ -1,9 +1,16 @@
-package probot
+package social.probot.microservice
 
 import java.io.IOException
 
+import akka.actor.ActorRef
+import akka.actor.Props
+import javax.ws.rs.Consumes
+import javax.ws.rs.Produces
 import org.apache.juneau.ObjectMap
+import org.apache.juneau.json.JsonParser
 import org.apache.juneau.rest.BasicRestServlet
+import org.apache.juneau.rest.RestRequest
+import org.apache.juneau.rest.RestResponse
 import org.apache.juneau.rest.annotation.HtmlDoc
 import org.apache.juneau.rest.annotation.Property
 import org.apache.juneau.rest.annotation.RestMethod
@@ -11,23 +18,13 @@ import org.apache.juneau.rest.annotation.RestResource
 import org.apache.juneau.rest.converters.Introspectable
 import org.apache.juneau.rest.converters.Queryable
 import org.apache.juneau.rest.converters.Traversable
-import org.apache.juneau.rest.RestRequest
-import org.apache.juneau.rest.RestResponse
-import TwitterResource.twitter
-import akka.actor.ActorRef
-import akka.actor.Props
-import javax.ws.rs.Consumes
-import javax.ws.rs.Produces
-import javax.ws.rs.ext.Provider
-import org.apache.juneau.http.Accept
-import org.apache.juneau.http.ContentType
-import org.apache.juneau.http.annotation.Body
-import org.apache.juneau.json.JsonParser
 import org.apache.streams.twitter.api.MessageCreateRequest
 import org.apache.streams.twitter.pojo.DirectMessageEvent
 import org.apache.streams.twitter.pojo.MessageCreate
 import org.apache.streams.twitter.pojo.MessageData
-import org.apache.streams.twitter.pojo.Target;
+import org.apache.streams.twitter.pojo.Target
+import social.probot.actors.MessageCreateRequestConsumer
+import social.probot.actors.MessageCreateRequestConsumer
 
 @RestResource(
   debug = "true",

@@ -1,10 +1,13 @@
-package probot
+package social.probot.actors
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import org.apache.streams.twitter.pojo.{DirectMessageEvent, WebhookEvents}
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+import org.apache.streams.twitter.pojo.DirectMessageEvent
+import org.apache.streams.twitter.pojo.WebhookEvents
 
 import scala.collection.JavaConversions._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class WebhookEventsConsumer extends Actor with ActorLogging {
 

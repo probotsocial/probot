@@ -1,13 +1,13 @@
-package probot
+package social.probot.actors
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import org.apache.juneau.ObjectMap
 import org.apache.streams.twitter.pojo.DirectMessageEvent
 import org.slf4j.LoggerFactory
-import probot.DirectMessageEventConsumer.EmailAddressEvent
-import probot.DirectMessageEventConsumer.PhoneNumberEvent
-import probot.ProbotPersistance.probotPersistance
+import social.probot.actors.DirectMessageEventConsumer.EmailAddressEvent
+import social.probot.actors.DirectMessageEventConsumer.PhoneNumberEvent
+import social.probot.actors.ProbotPersistance.probotPersistance
 
 class OptInEventPersister extends Actor with ActorLogging {
 

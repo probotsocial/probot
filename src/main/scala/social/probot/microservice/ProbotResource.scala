@@ -1,18 +1,17 @@
-package probot
+package social.probot.microservice
 
 import java.util.UUID
-import java.util.logging.Level
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.juneau.json.JsonSerializerBuilder
-import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.BasicRestServletGroup
 import org.apache.juneau.rest.annotation.HtmlDoc
 import org.apache.juneau.rest.annotation.RestResource
-import org.apache.juneau.rest.annotation.{HookEvent, RestHook}
-import org.apache.juneau.rest.{RestRequest, RestResponse}
+import org.apache.juneau.rest.annotation.HookEvent
+import org.apache.juneau.rest.annotation.RestHook
+import org.apache.juneau.rest.RestRequest
+import org.apache.juneau.rest.RestResponse
 import org.apache.streams.pojo.json.Activity
-import org.apache.streams.pojo.json.objectTypes.Application
 import org.joda.time.DateTime
 
 object ProbotResource {

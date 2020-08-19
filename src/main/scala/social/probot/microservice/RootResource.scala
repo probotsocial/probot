@@ -1,13 +1,13 @@
-package probot
+package social.probot.microservice
 
-import java.net.{URI, URL}
+import java.net.URI
 
-import javax.servlet.ServletException
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.rest.BasicRestServletGroup
-import org.apache.juneau.rest.annotation.{HtmlDoc, RestResource}
+import org.apache.juneau.rest.annotation.HtmlDoc
+import org.apache.juneau.rest.annotation.RestResource
 import org.apache.streams.config.StreamsConfigurator
 
 object RootResource {

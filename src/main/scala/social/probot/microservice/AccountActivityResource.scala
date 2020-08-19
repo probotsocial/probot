@@ -1,15 +1,14 @@
-package probot
+package social.probot.microservice
 
 import java.io.IOException
 
-import org.apache.http.client.utils.URIBuilder
 import org.apache.juneau.ObjectMap
 import org.apache.juneau.rest.BasicRestServlet
 import org.apache.juneau.rest.RestRequest
 import org.apache.juneau.rest.RestResponse
 import org.apache.juneau.rest.annotation.HtmlDoc
+import org.apache.juneau.rest.annotation.RestMethod
 import org.apache.juneau.rest.annotation.RestResource
-import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.twitter.api.Webhook
 import org.apache.streams.twitter.api.WelcomeMessageNewRequest
 import org.apache.streams.twitter.api.WelcomeMessageNewRequestWrapper
@@ -20,10 +19,6 @@ import org.apache.streams.twitter.api.WelcomeMessagesListRequest
 import org.apache.streams.twitter.pojo.MessageData
 import org.apache.streams.twitter.pojo.WelcomeMessage
 import org.apache.streams.twitter.pojo.WelcomeMessageRule
-import org.apache.juneau.rest.annotation.HookEvent.POST_INIT
-import org.apache.juneau.rest.annotation.RestHook
-import org.apache.juneau.rest.annotation.RestMethod
-import org.apache.streams.config.ComponentConfigurator
 
 import scala.collection.JavaConversions._
 import scala.util.Try
@@ -32,7 +27,6 @@ object AccountActivityResource {
 
   import ConfigurationResource.url
   import ConfigurationResource.welcomeMessage
-
   import TwitterResource.twitter
 
   def initWebhook(environment : String) : Webhook = {

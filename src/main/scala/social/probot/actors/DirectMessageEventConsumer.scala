@@ -1,13 +1,16 @@
-package probot
+package social.probot.actors
 
 import java.net.URL
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import org.apache.commons.validator.EmailValidator
-import org.apache.http.client.utils.URIBuilder
 import org.apache.streams.twitter.api.MessageCreateRequest
 import org.apache.streams.twitter.pojo._
-import probot.DirectMessageEventConsumer.RankEntity.RankEntity
+import social.probot.actors.DirectMessageEventConsumer.RankEntity.RankEntity
+import social.probot.microservice.TwitterResource
 
 import scala.util.Try
 
@@ -117,7 +120,6 @@ object DirectMessageEventConsumer {
 class DirectMessageEventConsumer extends Actor with ActorLogging {
 
   import DirectMessageEventConsumer._
-  import TwitterResource._
 
   override def preStart(): Unit = log.info("DirectMessageEventConsumer actor started")
   override def postStop(): Unit = log.info("DirectMessageEventConsumer actor stopped")
@@ -141,7 +143,7 @@ class DirectMessageEventConsumer extends Actor with ActorLogging {
     case event: DirectMessageEvent => {
       val senderId = event.getMessageCreate.getSenderId
       val recipientId = event.getMessageCreate.getTarget.getRecipientId
-      if (recipientId.equals(user.getIdStr)) {
+      if (recipientId.equals(TwitterResource.user.getIdStr)) {
         processMessageData(response(classify(event)), senderId, recipientId)
       }
     }

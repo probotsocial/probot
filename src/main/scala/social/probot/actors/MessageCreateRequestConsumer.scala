@@ -1,7 +1,9 @@
-package probot
+package social.probot.actors
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.Actor
+import akka.actor.ActorLogging
 import org.apache.streams.twitter.api.MessageCreateRequest
+import social.probot.microservice.TwitterResource
 
 class MessageCreateRequestConsumer extends Actor with ActorLogging {
 

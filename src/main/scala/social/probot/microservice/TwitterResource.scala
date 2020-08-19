@@ -1,29 +1,24 @@
-package probot
-
+package social.probot.microservice
 
 import java.io.IOException
-import java.util
-import java.util.concurrent.TimeUnit
 
-import javax.servlet.ServletException
-import akka.actor.{Actor, ActorRef, Props}
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.google.common.util.concurrent.Uninterruptibles
-import org.apache.http.HttpResponse
+import akka.actor.ActorRef
+import akka.actor.Props
 import org.apache.juneau.ObjectMap
 import org.apache.juneau.rest.BasicRestServlet
-import org.apache.juneau.rest.BasicRestServletGroup
-import org.apache.juneau.rest.{RestRequest, RestResponse}
-import org.apache.juneau.rest.annotation.{HtmlDoc, Property, RestMethod, RestResource}
-import org.apache.juneau.rest.converters.{Introspectable, Queryable, Traversable}
-import org.apache.streams.config.{ComponentConfigurator, StreamsConfiguration, StreamsConfigurator}
-import org.apache.streams.twitter.config.{TwitterConfiguration, TwitterFollowingConfiguration, TwitterTimelineProviderConfiguration}
+import org.apache.juneau.rest.annotation.HtmlDoc
+import org.apache.juneau.rest.annotation.Property
+import org.apache.juneau.rest.annotation.RestMethod
+import org.apache.juneau.rest.annotation.RestResource
+import org.apache.juneau.rest.converters.Introspectable
+import org.apache.juneau.rest.converters.Queryable
+import org.apache.juneau.rest.converters.Traversable
+import org.apache.juneau.rest.RestRequest
+import org.apache.juneau.rest.RestResponse
 import org.apache.streams.twitter.api._
-import org.apache.streams.twitter.pojo.{Follow, Tweet, User}
-import org.apache.streams.twitter.provider.{TwitterFollowingProvider, TwitterTimelineProvider}
-
-import scala.collection.JavaConversions._
-import scala.collection.JavaConverters._
+import org.apache.streams.twitter.pojo.User
+import social.probot.actors.MessageCreateRequestConsumer
+import social.probot.actors.MessageCreateRequestConsumer
 
 object TwitterResource {
 
@@ -105,9 +100,9 @@ object TwitterResource {
   converters=Array(classOf[Traversable],classOf[Queryable],classOf[Introspectable]),
   properties=Array(new Property(name = "REST_allowMethodParam", value = "*")),
   children = Array(
-    classOf[probot.AccountActivityResource],
-    classOf[probot.DirectMessageResource],
-    classOf[probot.WebhookResource]
+    classOf[AccountActivityResource],
+    classOf[DirectMessageResource],
+    classOf[WebhookResource]
   )
 )
 class TwitterResource extends BasicRestServlet {

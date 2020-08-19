@@ -1,11 +1,11 @@
-package probot
+package social.probot.actors
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import org.apache.juneau.ObjectMap
 import org.apache.streams.twitter.pojo.DirectMessageEvent
 import org.slf4j.LoggerFactory
-import probot.ProbotPersistance.probotPersistance
+import social.probot.actors.ProbotPersistance.probotPersistance
 
 class DirectMessageEventPersister extends Actor with ActorLogging {
 

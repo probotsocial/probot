@@ -1,18 +1,18 @@
-package probot
+package social.probot.microservice
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigRenderOptions
 import org.apache.commons.lang3.StringUtils
-import org.apache.juneau.microservice.resources.ConfigResource
-import org.apache.juneau.microservice.resources.LogsResource
-import org.apache.streams.config.StreamsConfigurator
-import org.slf4j.LoggerFactory
 import org.apache.juneau.microservice.jetty.JettyMicroservice
 import org.apache.juneau.microservice.jetty.JettyMicroserviceBuilder
+import org.apache.juneau.microservice.resources.ConfigResource
+import org.apache.juneau.microservice.resources.LogsResource
 import org.apache.streams.config.StreamsConfiguration
+import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.jackson.StreamsJacksonMapper
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 object ProbotMicroservice {
 

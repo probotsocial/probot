@@ -1,4 +1,4 @@
-package probot
+package social.probot.microservice
 
 import java.io.IOException
 
@@ -10,16 +10,17 @@ import org.apache.juneau.http.annotation.Header
 import org.apache.juneau.http.annotation.Query
 import org.apache.juneau.json.JsonParser
 import org.apache.juneau.rest.BasicRestServlet
+import org.apache.juneau.rest.RestRequest
+import org.apache.juneau.rest.RestResponse
 import org.apache.juneau.rest.annotation.HtmlDoc
 import org.apache.juneau.rest.annotation.RestMethod
 import org.apache.juneau.rest.annotation.RestResource
-import org.apache.juneau.rest.RestRequest
-import org.apache.juneau.rest.RestResponse
 import org.apache.streams.config.ComponentConfigurator
 import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.twitter.api.TwitterSecurity
 import org.apache.streams.twitter.config.TwitterOAuthConfiguration
 import org.apache.streams.twitter.pojo.WebhookEvents
+import social.probot.actors.WebhookEventsConsumer
 
 import scala.util.Try
 
