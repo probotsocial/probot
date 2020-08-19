@@ -33,7 +33,7 @@
             <organizationUrl>http://streams.apache.org</organizationUrl>
         </developer>
     </developers>
-		<!-- TODO: bintray -->
+    <!-- TODO: bintray -->
     <distributionManagement>
         <repository>
             <id>bintray-repo-maven-example</id>
@@ -59,15 +59,14 @@
         <scala.suffix>2.11</scala.suffix>
 
         <akka.version>2.5.31</akka.version>
+        <bahir.version>1.0</bahir.version>
         <commons-validator.version>1.6</commons-validator.version>
-        <delta.version>0.6.1</delta.version>
+        <flink.version>1.11.1</flink.version>
         <hadoop.version>2.7.3</hadoop.version>
         <jena.version>2.13.0</jena.version>
         <juneau.version>8.0.0</juneau.version>
         <libphonenumber.version>8.9.16</libphonenumber.version>
-        <livy.version>0.7.0-incubating</livy.version>
         <postgresql-client.version>42.2.14</postgresql-client.version>
-        <spark.version>2.4.6</spark.version>
         <streams.version>0.6.2-SNAPSHOT</streams.version>
         <typesafe.version>1.4.0</typesafe.version>
 
@@ -94,21 +93,21 @@
     </properties>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.scala-lang</groupId>-->
-<!--            <artifactId>scala-compiler</artifactId>-->
-<!--            <version>${scala.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.scala-lang</groupId>-->
-<!--            <artifactId>scala-reflect</artifactId>-->
-<!--            <version>${scala.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -152,6 +151,11 @@
                     <artifactId>scala-java8-compat_2.11</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-remote_${scala.suffix}</artifactId>
+            <version>${akka.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -238,46 +242,6 @@
             <version>${streams.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.livy</groupId>
-            <artifactId>livy-api</artifactId>
-            <version>${livy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.livy</groupId>
-            <artifactId>livy-client-common</artifactId>
-            <version>${livy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.livy</groupId>
-            <artifactId>livy-core_${scala.suffix}</artifactId>
-            <version>${livy.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-library</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-reflect</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.livy</groupId>
-            <artifactId>livy-scala-api_${scala.suffix}</artifactId>
-            <version>${livy.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-library</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-reflect</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql-client.version}</version>
@@ -288,50 +252,136 @@
             <version>${hadoop.version}</version>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.spark</groupId>-->
+<!--            <artifactId>spark-core_${scala.suffix}</artifactId>-->
+<!--            <version>${spark.version}</version>-->
+<!--            <scope>provided</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>io.netty</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.apache.hadoop</groupId>-->
+<!--                    <artifactId>hadoop-client</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.spark</groupId>-->
+<!--            <artifactId>spark-sql_${scala.suffix}</artifactId>-->
+<!--            <version>${spark.version}</version>-->
+<!--            <scope>provided</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>io.netty</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.apache.hadoop</groupId>-->
+<!--                    <artifactId>hadoop-client</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>io.delta</groupId>-->
+<!--            <artifactId>delta-core_${scala.suffix}</artifactId>-->
+<!--            <version>${delta.version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.scala-lang</groupId>-->
+<!--                    <artifactId>scala-library</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.scala-lang</groupId>-->
+<!--                    <artifactId>scala-reflect</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.suffix}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
+            <groupId>org.apache.streams.examples</groupId>
+            <artifactId>streams-example-flink-twitter-collection</artifactId>
+            <version>${streams.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-jdbc_${scala.suffix}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients_${scala.suffix}</artifactId>
+            <version>${flink.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>*</artifactId>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.hadoop</groupId>
-                    <artifactId>hadoop-client</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.suffix}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-scala_${scala.suffix}</artifactId>
+            <version>${flink.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>*</artifactId>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.hadoop</groupId>
-                    <artifactId>hadoop-client</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.delta</groupId>
-            <artifactId>delta-core_${scala.suffix}</artifactId>
-            <version>${delta.version}</version>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-scala_${scala.suffix}</artifactId>
+            <version>${flink.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-library</artifactId>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-reflect</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.bahir</groupId>
+            <artifactId>flink-connector-akka_${scala.suffix}</artifactId>
+            <version>${bahir.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.flink</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -439,36 +489,74 @@
                     <version>${shade.plugin.version}</version>
                     <executions>
                         <execution>
-                            <id>package</id>
+                            <id>package-microservice</id>
                             <phase>package</phase>
                             <goals>
                                 <goal>shade</goal>
                             </goals>
+                            <configuration>
+                                <outputDirectory>dist</outputDirectory>
+                                <outputFile>dist/${project.artifactId}-microservice-jar-with-dependencies.jar</outputFile>
+                                <filters>
+                                    <filter>
+                                        <artifact>*:*</artifact>
+                                        <excludes>
+                                            <exclude>**/META-INF/**</exclude>
+                                        </excludes>
+                                    </filter>
+                                </filters>
+                                <transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                        <resource>reference.conf</resource>
+                                    </transformer>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                        <resource>META-INF/services/</resource>
+                                    </transformer>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                        <resource>META-INF/services/org.apache.spark.sql.sources.DataSourceRegister</resource>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>package-pipelines</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <artifactSet>
+                                    <excludes>
+                                        <exclude>org.scala-lang:scala-compiler</exclude>
+                                        <exclude>org.scala-lang:scala-library</exclude>
+                                        <exclude>org.scala-lang:scala-reflect</exclude>
+                                    </excludes>
+                                </artifactSet>
+                                <outputDirectory>dist</outputDirectory>
+                                <outputFile>dist/${project.artifactId}-pipelines-jar-with-dependencies.jar</outputFile>
+                                <filters>
+                                    <filter>
+                                        <artifact>*:*</artifact>
+                                        <excludes>
+                                            <exclude>**/META-INF/**</exclude>
+                                        </excludes>
+                                    </filter>
+                                </filters>
+                                <transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                        <resource>reference.conf</resource>
+                                    </transformer>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                        <resource>META-INF/services/</resource>
+                                    </transformer>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                        <resource>META-INF/services/org.apache.spark.sql.sources.DataSourceRegister</resource>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
                         </execution>
                     </executions>
-                    <configuration>
-                        <outputDirectory>dist</outputDirectory>
-                        <outputFile>dist/${project.artifactId}-jar-with-dependencies.jar</outputFile>
-                        <filters>
-                            <filter>
-                                <artifact>*:*</artifact>
-                                <excludes>
-                                    <exclude>**/META-INF/**</exclude>
-                                </excludes>
-                            </filter>
-                        </filters>
-                        <transformers>
-                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                <resource>reference.conf</resource>
-                            </transformer>
-                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                <resource>META-INF/services/</resource>
-                            </transformer>
-                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                <resource>META-INF/services/org.apache.spark.sql.sources.DataSourceRegister</resource>
-                            </transformer>
-                        </transformers>
-                    </configuration>
+
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
@@ -484,9 +572,8 @@
                                 <name>probotsocial/microservice</name>
                                 <alias>microservice</alias>
                                 <build>
-                                    <dockerFile>Dockerfile</dockerFile>
+                                    <dockerFile>microservice</dockerFile>
                                     <tags>
-                                        <tag>${current.time}</tag>
                                         <tag>${project.version}</tag>
                                         <tag>latest</tag>
                                     </tags>
