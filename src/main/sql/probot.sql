@@ -1,15 +1,36 @@
-CREATE TABLE direct_message_events_json (
-                             id VARCHAR(255) UNIQUE NOT NULL,
-                             ts TIMESTAMP NOT NULL,
-                             json JSONB,
-                             PRIMARY KEY (id)
+
+CREATE TABLE followers_ids (
+                                id VARCHAR(255) UNIQUE NOT NULL,
+                                ts TIMESTAMP NOT NULL DEFAULT NOW(),
+                                PRIMARY KEY (id)
 );
 
 CREATE TABLE followers_json (
+                                id VARCHAR(255) UNIQUE NOT NULL,
+                                ts TIMESTAMP NOT NULL DEFAULT NOW(),
+                                json JSONB,
+                                PRIMARY KEY (id)
+);
+
+CREATE TABLE friends_json (
+                                id VARCHAR(255) UNIQUE NOT NULL,
+                                ts TIMESTAMP NOT NULL DEFAULT NOW(),
+                                json JSONB,
+                                PRIMARY KEY (id)
+);
+
+CREATE TABLE followers_usertimeline_json (
                                       id VARCHAR(255) UNIQUE NOT NULL,
                                       ts TIMESTAMP NOT NULL,
                                       json JSONB,
                                       PRIMARY KEY (id)
+);
+
+CREATE TABLE direct_message_events_json (
+                                            id VARCHAR(255) UNIQUE NOT NULL,
+                                            ts TIMESTAMP NOT NULL,
+                                            json JSONB,
+                                            PRIMARY KEY (id)
 );
 
 CREATE TABLE optins_json (
@@ -19,7 +40,7 @@ CREATE TABLE optins_json (
                                 PRIMARY KEY (id)
 );
 
-CREATE VIEW followers_table AS
+CREATE VIEW followers AS
 SELECT
     id,
     ts,
@@ -37,7 +58,7 @@ SELECT
     json->>'follow_request_sent' AS follow_request_sent
 FROM followers_json;
 
-CREATE VIEW messages_table AS
+CREATE VIEW messages AS
 SELECT
     id,
     ts,
@@ -47,7 +68,7 @@ SELECT
     json->'message_create'->'target'->>'recipient_id' AS recipient_id
 FROM direct_message_events_json;
 
-CREATE VIEW optins_table AS
+CREATE VIEW optins AS
 SELECT
     id,
     ts,
