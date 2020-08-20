@@ -1,0 +1,102 @@
+{
+  "paragraphs": [
+    {
+      "text": "import org.apache.spark.sql.SparkSession\nimport org.apache.spark.sql.DataFrame\nfinal val sparkSession \u003d SparkSession.builder().getOrCreate()\nclass Request {\n  val baseDir \u003d \"/data\"\n  val inputPath \u003d \"user_timeline.jsonl\"\n  val inputFormat \u003d \"json\"\n  val jdbcDriver \u003d \"org.postgresql.Driver\"\n  val jdbcUser \u003d \"postgres\"\n  val jdbcPassword \u003d \"postgres\"\n  val jdbcUrl \u003d \"jdbc:postgresql://postgres:5432/postgres\"\n}\nval request \u003d new Request\nval user_timeline_jsons : DataFrame \u003d sparkSession.sqlContext.read.format(\"json\").load(request.baseDir + \"/\" + request.inputPath)\nuser_timeline_jsons.createOrReplaceTempView(\"user_timeline_jsons\")\nval user_timeline_df \u003d user_timeline_jsons.orderBy(desc(\"created_at\"))\nuser_timeline_df.createOrReplaceTempView(\"user_timeline_df\")\nval tweets_json_df \u003d user_timeline_df.select(\n    concat(lit(\"twitter:post:\"), user_timeline_df(\"id\")).as(\"id\"),\n    to_json(struct(col(\"*\"))).as(\"json\")\n).groupBy(\"id\").agg(first(\"json\").as(\"json\"))\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-20 15:42:32.472",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597883010441_-281370204",
+      "id": "paragraph_1597855829753_1384814972",
+      "dateCreated": "2020-08-20 00:23:30.441",
+      "dateStarted": "2020-08-20 15:42:32.636",
+      "dateFinished": "2020-08-20 15:42:51.022",
+      "status": "FINISHED"
+    },
+    {
+      "text": "val jdbc_options \u003d  Map(\n  \"user\" -\u003e request.jdbcUser,\n  \"password\" -\u003e request.jdbcPassword,\n  \"url\" -\u003e request.jdbcUrl,\n  \"driver\" -\u003e request.jdbcDriver,\n  \"fetchSize\" -\u003e \"100\",\n  \"numPartitions\" -\u003e \"1\"\n)\nval jdbc_properties \u003d new java.util.Properties\njdbc_properties.setProperty(\"driver\", request.jdbcDriver)\njdbc_properties.setProperty(\"user\", request.jdbcUser)\njdbc_properties.setProperty(\"password\", request.jdbcPassword)\njdbc_properties.setProperty(\"stringtype\", \"unspecified\")\ntweets_json_df.count()\ntweets_json_df.write.mode(\"append\").jdbc(request.jdbcUrl, \"tweets_json\", jdbc_properties)",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-20 15:42:52.423",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597883010443_552436712",
+      "id": "paragraph_1597855875248_1590970754",
+      "dateCreated": "2020-08-20 00:23:30.443",
+      "dateStarted": "2020-08-20 15:42:52.441",
+      "dateFinished": "2020-08-20 15:43:02.175",
+      "status": "FINISHED"
+    },
+    {
+      "user": "anonymous",
+      "dateUpdated": "2020-08-20 00:23:30.444",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597883010444_941111947",
+      "id": "paragraph_1597855922016_-1373510817",
+      "dateCreated": "2020-08-20 00:23:30.444",
+      "status": "READY"
+    }
+  ],
+  "name": "LoadTweets",
+  "id": "2FGPJPJTQ",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}

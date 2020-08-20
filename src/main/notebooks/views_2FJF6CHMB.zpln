@@ -21,15 +21,6 @@
         "params": {},
         "forms": {}
       },
-      "results": {
-        "code": "SUCCESS",
-        "msg": [
-          {
-            "type": "TEXT",
-            "data": "Query executed successfully. Affected rows : 0"
-          }
-        ]
-      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597858101507_2135935893",
@@ -60,15 +51,6 @@
         "params": {},
         "forms": {}
       },
-      "results": {
-        "code": "SUCCESS",
-        "msg": [
-          {
-            "type": "TEXT",
-            "data": "Query executed successfully. Affected rows : 0"
-          }
-        ]
-      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597858101507_128434246",
@@ -79,9 +61,9 @@
       "status": "FINISHED"
     },
     {
-      "text": "%jdbc\n",
+      "text": "%jdbc\nDROP VIEW IF EXISTS tweets;\nCREATE VIEW tweets AS\nSELECT\n    id,\n    ts,\n    json-\u003e\u003e\u0027created_at\u0027 AS created_at,\n    json-\u003e\u003e\u0027text\u0027 AS text,\n    json-\u003e\u003e\u0027source\u0027 AS source,\n    json-\u003e\u003e\u0027lang\u0027 AS lang,\n    json-\u003e\u003e\u0027favorited\u0027 AS favorited,\n    json-\u003e\u003e\u0027retweeted\u0027 AS retweeted,\n    json-\u003e\u003e\u0027favorite_count\u0027 AS favorite_count,\n    json-\u003e\u003e\u0027retweet_count\u0027 AS retweet_count,\n    json-\u003e\u003e\u0027quoted_status_id\u0027 AS quoted_status_id,\n    json-\u003e\u003e\u0027retweeted_status_id\u0027 AS retweeted_status_id\nFROM tweets_json;\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-19 17:35:00.453",
+      "dateUpdated": "2020-08-20 16:20:30.905",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -104,7 +86,25 @@
       "jobName": "paragraph_1597858372641_1252966571",
       "id": "paragraph_1597858372641_1252966571",
       "dateCreated": "2020-08-19 17:32:52.641",
+      "dateStarted": "2020-08-20 16:20:30.917",
+      "dateFinished": "2020-08-20 16:20:30.979",
       "status": "FINISHED"
+    },
+    {
+      "text": "%jdbc\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-08-20 16:20:24.103",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597940424103_2100144523",
+      "id": "paragraph_1597940424103_2100144523",
+      "dateCreated": "2020-08-20 16:20:24.103",
+      "status": "READY"
     }
   ],
   "name": "views",
