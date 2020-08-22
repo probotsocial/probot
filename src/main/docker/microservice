@@ -1,17 +1,22 @@
-FROM 1science/java
+FROM maven:3.6-jdk-8-alpine as builder
+COPY ./pom.xml /opt/probot/
+COPY ./*.conf /opt/probot/
+COPY ./src/main /opt/probot/src/main
+COPY ./src/test /opt/probot/src/test
+RUN mvn -f /opt/probot/pom.xml clean package
+
+FROM openjdk:8-jdk-alpine
 MAINTAINER sblackmon@apache.org
-LABEL Description="probot"
+LABEL Description="probot microservice"
 WORKDIR /
-ADD maven/jetty.xml /jetty.xml
-ADD maven/logback.xml /logback.xml
-ADD maven/microservice.cfg /microservice.cfg
-ADD maven/probot-microservice-jar-with-dependencies.jar /probot-microservice-jar-with-dependencies.jar
-ADD start.sh /start.sh
-RUN chmod +x /start.sh
+ADD src/main/resources/jetty.xml /jetty.xml
+ADD src/main/resources/logback.xml /logback.xml
+ADD src/main/resources/microservice.cfg /microservice.cfg
+ADD src/main/docker/start.sh /start.sh
+COPY --from=builder /opt/probot/dist/probot-microservice-jar-with-dependencies.jar /probot-microservice-jar-with-dependencies.jar
 EXPOSE 10000
-ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["java"]
 CMD [ \
-    "java", \
     "-Dconfig.url=file:///application.conf", \
     "-Dlogback.configurationFile=file:///logback.xml", \
     "-cp", \

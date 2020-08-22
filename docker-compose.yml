@@ -22,12 +22,15 @@ services:
 
   microservice:
     image: "probotsocial/microservice:latest"
+    build:
+      context: .
+      dockerfile: src/main/docker/microservice
     ports:
       - 10000:10000
       - 2552:2552
     volumes:
-      - "$WORKDIR:/workdir"
-      - "$WORKDIR/microservice.conf:/application.conf"
+      - ".:/workdir"
+      - "./microservice.conf:/application.conf"
 
   postgres:
     image: "postgres:11"
@@ -37,7 +40,7 @@ services:
       - PGDATA=/var/lib/postgresql/data
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - "$WORKDIR/volumes/postgres:/var/lib/postgresql/data"
+      - "./volumes/postgres:/var/lib/postgresql/data"
 
   postgrest:
     image: "postgrest/postgrest:latest"
@@ -46,7 +49,7 @@ services:
     links:
       - "postgres:postgres"
     volumes:
-      - "$WORKDIR/postgrest.conf:/etc/postgrest.conf"
+      - "./postgrest.conf:/etc/postgrest.conf"
 
   zeppelin:
     image: "probotsocial/zeppelin:latest"
@@ -63,10 +66,11 @@ services:
       - "SPARK_HOME=/zeppelin/spark"
       - "SPARK_SUBMIT_OPTIONS=--jars /jars/probot-pipelines-jar-with-dependencies.jar"
     volumes:
-      - "$WORKDIR:/workdir"
-      - "$WORKDIR/data:/data"
-      - "$WORKDIR/dist:/jars"
-      - "$WORKDIR/src/main/notebooks:/zeppelin/notebook"
+      - ".:/workdir"
+      - "./data:/data"
+      - "./dist:/jars"
+      - "./src/main/notebooks:/zeppelin/notebook"
+      - "./src/main/resources/interpreter:/zeppelin/interpreter.json"
 
   jobmanager:
     image: flink:1.11.1-scala_2.11-java8
@@ -81,10 +85,8 @@ services:
         jobmanager.rpc.address: jobmanager
         jobmanager.memory.process.size: 4000Mb
     volumes:
-      - "$WORKDIR:/workdir"
-      - "$WORKDIR/data:/data"
-#      - "/Users/Shared/Dropbox/git/streams/streams-examples/streams-examples-flink/flink-twitter-collection/dist/streams-example-flink-twitter-collection-jar-with-dependencies.jar:/jars/streams-example-flink-twitter-collection-jar-with-dependencies.jar"
-#      - "/Users/steveblackmon/Tools/hadoop-2.7.3:/hadoop27"
+      - ".:/workdir"
+      - "./data:/data"
 
   taskmanager:
     image: flink:1.11.1-scala_2.11-java8
@@ -101,6 +103,5 @@ services:
         taskmanager.numberOfTaskSlots: 4
         taskmanager.memory.process.size: 8000Mb
     volumes:
-      - "$WORKDIR:/workdir"
-      - "$WORKDIR/data:/data"
-#      - "/Users/steveblackmon/Tools/hadoop-2.7.3:/hadoop27"
+      - ".:/workdir"
+      - "./data:/data"
