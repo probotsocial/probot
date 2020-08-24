@@ -17,8 +17,8 @@ services:
       - "postgrest:postgrest"
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - MICROSERVICE_URL=http://localhost:10000
-      - POSTGREST_URL=http://localhost:5000
+      - REACT_APP_MICROSERVICE_URL=http://localhost:10000
+      - REACT_APP_POSTGREST_URL=http://localhost:5000
 
   microservice:
     image: "probotsocial/microservice:latest"

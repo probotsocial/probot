@@ -5,8 +5,8 @@ const httpClient = fetchUtils.fetchJson
 // const Client = require('node-rest-client').Client;
 // const client = new Client ();
 
-const microserviceUrl = process.env.MICROSERVICE_URL || 'http://localhost:10000'
-const postgrestUrl = process.env.POSTGREST_URL || 'http://localhost:5000'
+const microserviceUrl = process.env.REACT_APP_MICROSERVICE_URL || 'http://localhost:10000'
+const postgrestUrl = process.env.REACT_APP_POSTGREST_URL || 'http://localhost:5000'
 const postgrestDataProvider = postgrestClient(postgrestUrl)
 
 const hybridDataProvider = {
