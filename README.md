@@ -1,8 +1,15 @@
 # probot
 
-Profile Bot (aka **probot**) is a software package you can run to manage your social media accounts programatically.
+Profile Bot (aka **probot**) is a software package you can run to help manage your social media accounts.
+
+**probot** collects, organizes, and presents all data available to you via apis, exports, and other sources.
  
-**probot** can send direct messages to lists of followers, and reply to direct messages you receive.
+**probot** is proactive; it can be configured to:
+  - auto-follow accounts that follow you
+  - auto-reply to direct messages you receive
+  - send direct messages to specific subsets of followers
+  - auto-block trolls who reply to your content
+  - and more.
 
 ## basics
 
@@ -22,13 +29,12 @@ Run the following to build the front-end from source.
 
     yarn install
 
+For more information on setting up a development environment:
+[dev-setup.md](./dev-setup.md)
+
 ## preparation
 
-Run the following to prepare the back-end for docker deployment.
-
-    mvn clean package docker:build
-
-Run the following to prepare the front-end for docker deployment.
+Run the following to prepare for docker deployment.
 
     docker-compose build
 
@@ -52,24 +58,29 @@ Configuration you must edit:
     - twitter.oauth.*
     - server.hostname
 
-Configuration you may want to edit:
-  * src/main/resources/conf/collect-follower-ids.conf
-    - max_items
-    - max_pages
-
 ## running
 
 Run the following to deploy the stack to local docker environment.
 
-    export WORKDIR=`pwd`
     docker-compose up -d
 
+## initial data acquisition
+
+The database must be populated manually.
+
+This is a multi-step process managed via zeppelin.
+
+For more details:
+[twitter-setup.md](./twitter-setup.md)
+
 ## connectivity
+
+Probot supports an active real-time twitter account_activity connection.
 
 You will not be able to establish real-time connectivity with twitter unless you 
 expose microservice to the internet with a high-quality SSL configuration.
 
-How to do this is beyond the scope of this document.
+How to do that is beyond the scope of this document.
 
 ## spot check
 
@@ -79,24 +90,12 @@ In a browser navigate to 'https://<domain>/probot/twitter/webhook'
 
 If everything is working you will see 'subscribed true' as final status.
 
-## setup
-
-Probot should launch with an active real-time twitter account_activity connection, but a blank database.
-
-Once real-time connectivity is confirmed, the database must be backfilled manually to reflect existing followers.
-
-This is a multi-step process managed via zeppelin.
-
-See twitter-setup.md for more details.
-
 ## dependencies
 
 Probot back-end has the following essential library dependencies:
 
  * [Apache Juneau](http://juneau.incubator.apache.org "http://juneau.incubator.apache.org")
    HTTP microservice (based on Jetty) and data marshalling libraries
- * [Apache Spark](http://spark.apache.org "http://spark.apache.org")
-   Data engineering / data science framework supporting batch and Stream processing
  * [Apache Streams](http://streams.apache.org "http://streams.apache.org")
    Twitter SDK, pojos, and connectivity
 
@@ -111,11 +110,14 @@ Probot front-end has the following essential dependencies:
 
 Probot relies on several supporting run-time dependencies:
 
- * [Livy](https://livy.apache.org/ "https://livy.apache.org")
-   A REST Service for Apache Spark
+ * [Flink](https://flink.apache.org/ "https://flink.apache.org")
+   Stateful Computations over Data Streams
  * [Postgresql](https://www.postgresql.org/ "https://www.postgresql.org/")
    The World's Most Advanced Open Source Relational Database
  * [Postgrest](https://postgrest.org "http://www.postgrest.org")
    PostgREST is a standalone web server that turns your PostgreSQL database directly into a RESTful API.
+ * [Zeppelin](https://zeppelin.apache.org/ "https://zeppelin.apache.org")
+   Web-based notebook that enables data-driven,
+   interactive data analytics and collaborative documents with SQL, Scala and more.
 
 
