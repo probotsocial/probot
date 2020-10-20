@@ -1,7 +1,6 @@
 import React from 'react';
 import { List, Datagrid } from 'react-admin';
-import { ArrayField, BooleanField, DateField, FunctionField, NumberField, TextField, ReferenceField, SingleFieldList, ChipField, UrlField } from 'react-admin';
-import { Filter, TextInput, NullableBooleanInput, SearchInput } from 'react-admin';
+import { DateField, TextField } from 'react-admin';
 
 export const PostList = props => (
     <List {...props} perPage={100} >

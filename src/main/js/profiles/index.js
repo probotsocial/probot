@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Datagrid } from 'react-admin';
-import { ArrayField, BooleanField, DateField, NumberField, TextField, ReferenceField, SingleFieldList, ChipField, UrlField } from 'react-admin';
+import { BooleanField, NumberField, TextField, UrlField } from 'react-admin';
 import { Filter, TextInput, NullableBooleanInput, SearchInput } from 'react-admin';
 import SendMessageButton from './SendMessageButton'
 

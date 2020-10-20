@@ -3,7 +3,7 @@
     {
       "text": "%spark\nimport com.typesafe.config.ConfigFactory\nimport com.typesafe.config.ConfigValueFactory\nimport java.io.File\nimport java.io.PrintWriter\nimport org.apache.streams.config.ComponentConfigurator\nimport org.apache.streams.config.StreamsConfigurator\nimport scala.collection.JavaConverters._\nimport scala.collection.JavaConversions._\nimport scala.collection.mutable._\n\nval configBase \u003d ConfigFactory.parseFile(new File(\"/workdir/src/main/resources/conf/FlinkTwitterFollowingPipeline.template.conf\"))\nval config \u003d configBase.withValue(\"ENDPOINT\", ConfigValueFactory.fromAnyRef(\"friends\"))\nval configHocon \u003d config.resolve.root.render\n\nnew PrintWriter(s\"/data/CollectFriends.conf\") { write(configHocon); close }\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-18 22:33:28.778",
+      "dateUpdated": "2020-08-20 19:40:17.947",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -21,19 +21,28 @@
         "params": {},
         "forms": {}
       },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import com.typesafe.config.ConfigFactory\nimport com.typesafe.config.ConfigValueFactory\nimport java.io.File\nimport java.io.PrintWriter\nimport org.apache.streams.config.ComponentConfigurator\nimport org.apache.streams.config.StreamsConfigurator\nimport scala.collection.JavaConverters._\nimport scala.collection.JavaConversions._\nimport scala.collection.mutable._\n\u001b[1m\u001b[34mconfigBase\u001b[0m: \u001b[1m\u001b[32mcom.typesafe.config.Config\u001b[0m \u003d Config(SimpleConfigObject({\"mode\":\"batch\",\"org\":{\"apache\":{\"streams\":{\"config\":{\"StreamsConfiguration\":{\"batchFrequencyMs\":30000,\"batchSize\":10000,\"identifier\":\"FlinkTwitterFollowingPipeline\",\"parallelism\":2,\"providerTimeoutMs\":60000,\"providerWaitMs\":60000,\"queueSize\":10000,\"shutdownCheckDelay\":30000,\"shutdownCheckInterval\":30000}},\"flink\":{\"StreamsFlinkConfiguration\":..."
+          }
+        ]
+      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597704461686_1263921915",
       "id": "paragraph_1597704461686_1263921915",
       "dateCreated": "2020-08-17 22:47:41.686",
-      "dateStarted": "2020-08-18 22:33:28.791",
-      "dateFinished": "2020-08-18 22:33:29.171",
+      "dateStarted": "2020-08-20 19:40:18.006",
+      "dateFinished": "2020-08-20 19:40:26.702",
       "status": "FINISHED"
     },
     {
       "text": "%sh\n/zeppelin/flink/bin/flink run -m jobmanager:8081 \\\n    -c org.apache.streams.examples.flink.twitter.collection.FlinkTwitterFollowingPipeline \\\n    /jars/probot-pipelines-jar-with-dependencies.jar \\\n    file:///data/CollectFriends.conf\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-18 22:33:38.210",
+      "dateUpdated": "2020-08-20 19:40:30.552",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -50,20 +59,33 @@
       "settings": {
         "params": {},
         "forms": {}
+      },
+      "results": {
+        "code": "INCOMPLETE",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Job has been submitted with JobID 89c5741860c8f566e6c4b2ac290e3488\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Paragraph received a SIGTERM\nExitValue: 143"
+          }
+        ]
       },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1596482264838_1019833188",
       "id": "paragraph_1596482264838_1019833188",
       "dateCreated": "2020-08-03 19:17:44.839",
-      "dateStarted": "2020-08-18 22:33:38.220",
-      "dateFinished": "2020-08-18 22:34:38.593",
+      "dateStarted": "2020-08-20 19:40:30.613",
+      "dateFinished": "2020-08-20 19:41:31.573",
       "status": "FINISHED"
     },
     {
       "text": "%sh\ncd \"/data/friends.jsonl\"\nfor file in .part-*\ndo\n   mv \"$file\" \"$(echo $file | sed \u0027s/^.\\{1\\}//g\u0027)\"\ndone",
       "user": "anonymous",
-      "dateUpdated": "2020-08-18 22:43:52.023",
+      "dateUpdated": "2020-08-20 19:44:40.664",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -81,13 +103,17 @@
         "params": {},
         "forms": {}
       },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1596482420784_-1170137378",
       "id": "paragraph_1596482420784_-1170137378",
       "dateCreated": "2020-08-03 19:20:20.784",
-      "dateStarted": "2020-08-18 22:43:52.037",
-      "dateFinished": "2020-08-18 22:43:52.059",
+      "dateStarted": "2020-08-20 19:44:40.767",
+      "dateFinished": "2020-08-20 19:44:41.549",
       "status": "FINISHED"
     },
     {

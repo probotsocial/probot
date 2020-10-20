@@ -3,7 +3,7 @@
     {
       "text": "DROP SCHEMA IF EXISTS postgres CASCADE;\n\nCREATE SCHEMA IF NOT EXISTS postgres;\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-19 18:06:22.114",
+      "dateUpdated": "2020-08-20 19:47:06.841",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -18,20 +18,29 @@
       "settings": {
         "params": {},
         "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
       },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597857637845_813698215",
       "id": "paragraph_1597857637845_813698215",
       "dateCreated": "2020-08-19 17:20:37.845",
-      "dateStarted": "2020-08-19 18:06:22.126",
-      "dateFinished": "2020-08-19 18:06:22.787",
+      "dateStarted": "2020-08-20 19:47:06.890",
+      "dateFinished": "2020-08-20 19:47:10.480",
       "status": "FINISHED"
     },
     {
       "text": "CREATE TABLE followers_json (\n                                id VARCHAR(255) UNIQUE NOT NULL,\n                                ts TIMESTAMP NOT NULL DEFAULT NOW(),\n                                json JSONB,\n                                PRIMARY KEY (id)\n);\n\nCREATE TABLE friends_json (\n                                id VARCHAR(255) UNIQUE NOT NULL,\n                                ts TIMESTAMP NOT NULL DEFAULT NOW(),\n                                json JSONB,\n                                PRIMARY KEY (id)\n);\n\nCREATE TABLE tweets_json (\n                                id VARCHAR(255) UNIQUE NOT NULL,\n                                ts TIMESTAMP NOT NULL DEFAULT NOW(),\n                                json JSONB,\n                                PRIMARY KEY (id)\n);\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-20 16:41:20.370",
+      "dateUpdated": "2020-08-20 19:47:13.272",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -47,14 +56,37 @@
         "params": {},
         "forms": {}
       },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
+      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597857685854_-1304404179",
       "id": "paragraph_1597857685854_-1304404179",
       "dateCreated": "2020-08-19 17:21:25.854",
-      "dateStarted": "2020-08-19 18:06:24.779",
-      "dateFinished": "2020-08-19 18:06:24.843",
+      "dateStarted": "2020-08-20 19:47:13.384",
+      "dateFinished": "2020-08-20 19:47:16.154",
       "status": "FINISHED"
+    },
+    {
+      "user": "anonymous",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1597952833303_471747105",
+      "id": "paragraph_1597952833303_471747105",
+      "dateCreated": "2020-08-20 19:47:13.303",
+      "status": "READY"
     }
   ],
   "name": "schema",

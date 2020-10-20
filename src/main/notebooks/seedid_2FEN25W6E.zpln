@@ -1,9 +1,9 @@
 {
   "paragraphs": [
     {
-      "text": "%spark\nimport scala.collection.Seq\nval seedid \u003d \"42232950\"\nval seedid_list \u003d Seq(seedid)\nval seedid_df \u003d seedid_list.toDS()\nseedid_rdd.coalesce(1).write.format(\"csv\").mode(\"overwrite\").option(\"header\", false).save(\"/data/seed_userid.txt\")",
+      "text": "%spark\nimport scala.collection.Seq\nval seedid \u003d \"591947114\"\nval seedid_list \u003d Seq(seedid)\nval seedid_df \u003d seedid_list.toDS()\nseedid_df.coalesce(1).write.format(\"csv\").mode(\"overwrite\").option(\"header\", false).save(\"/data/seed_userid.txt\")",
       "user": "anonymous",
-      "dateUpdated": "2020-08-18 22:14:11.570",
+      "dateUpdated": "2020-08-20 19:36:52.440",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -26,7 +26,7 @@
         "msg": [
           {
             "type": "TEXT",
-            "data": "import scala.collection.Seq\n\u001b[1m\u001b[34mseedid\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m \u003d 42232950\n\u001b[1m\u001b[34mseedid_list\u001b[0m: \u001b[1m\u001b[32mSeq[String]\u001b[0m \u003d List(42232950)\n\u001b[1m\u001b[34mseedid_df\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[String]\u001b[0m \u003d [value: string]\n"
+            "data": "import scala.collection.Seq\n\u001b[1m\u001b[34mseedid\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m \u003d 591947114\n\u001b[1m\u001b[34mseedid_list\u001b[0m: \u001b[1m\u001b[32mSeq[String]\u001b[0m \u003d List(591947114)\n\u001b[1m\u001b[34mseedid_df\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[String]\u001b[0m \u003d [value: string]\n"
           }
         ]
       },
@@ -35,8 +35,8 @@
       "jobName": "paragraph_1596403597481_1664083524",
       "id": "paragraph_1596403597481_1664083524",
       "dateCreated": "2020-08-02 21:26:37.481",
-      "dateStarted": "2020-08-18 22:14:11.586",
-      "dateFinished": "2020-08-18 22:14:13.670",
+      "dateStarted": "2020-08-20 19:36:52.518",
+      "dateFinished": "2020-08-20 19:37:20.806",
       "status": "FINISHED"
     },
     {

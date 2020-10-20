@@ -3,7 +3,7 @@
     {
       "text": "%jdbc\nDROP VIEW IF EXISTS followers;\nCREATE VIEW followers AS\nSELECT\n    id,\n    ts,\n    json-\u003e\u003e\u0027name\u0027 AS name,\n    json-\u003e\u003e\u0027description\u0027 AS description,\n    json-\u003e\u003e\u0027url\u0027 AS url,\n    json-\u003e\u003e\u0027location\u0027 AS location,\n    json-\u003e\u003e\u0027screen_name\u0027 AS screen_name,\n    json-\u003e\u003e\u0027followers_count\u0027 AS followers_count,\n    json-\u003e\u003e\u0027friends_count\u0027 AS friends_count,\n    json-\u003e\u003e\u0027favourites_count\u0027 AS favourites_count,\n    json-\u003e\u003e\u0027statuses_count\u0027 AS statuses_count,\n    json-\u003e\u003e\u0027lists_count\u0027 AS lists_count,\n    json-\u003e\u003e\u0027blocking\u0027 AS blocking,\n    json-\u003e\u003e\u0027following\u0027 AS following,\n    json-\u003e\u003e\u0027follow_request_sent\u0027 AS follow_request_sent\nFROM followers_json;\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-19 18:06:41.833",
+      "dateUpdated": "2020-08-20 19:55:48.705",
       "config": {
         "editorSetting": {
           "language": "text",
@@ -21,19 +21,28 @@
         "params": {},
         "forms": {}
       },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
+      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597858101507_2135935893",
       "id": "paragraph_1597857685854_-1304404179",
       "dateCreated": "2020-08-19 17:28:21.507",
-      "dateStarted": "2020-08-19 18:06:41.844",
-      "dateFinished": "2020-08-19 18:06:41.870",
+      "dateStarted": "2020-08-20 19:55:48.791",
+      "dateFinished": "2020-08-20 19:55:49.314",
       "status": "FINISHED"
     },
     {
       "text": "%jdbc\nDROP VIEW IF EXISTS friends;\nCREATE VIEW friends AS\nSELECT\n    id,\n    ts,\n    json-\u003e\u003e\u0027name\u0027 AS name,\n    json-\u003e\u003e\u0027description\u0027 AS description,\n    json-\u003e\u003e\u0027url\u0027 AS url,\n    json-\u003e\u003e\u0027location\u0027 AS location,\n    json-\u003e\u003e\u0027screen_name\u0027 AS screen_name,\n    json-\u003e\u003e\u0027followers_count\u0027 AS followers_count,\n    json-\u003e\u003e\u0027friends_count\u0027 AS friends_count,\n    json-\u003e\u003e\u0027favourites_count\u0027 AS favourites_count,\n    json-\u003e\u003e\u0027statuses_count\u0027 AS statuses_count,\n    json-\u003e\u003e\u0027lists_count\u0027 AS lists_count,\n    json-\u003e\u003e\u0027blocking\u0027 AS blocking,\n    json-\u003e\u003e\u0027following\u0027 AS following,\n    json-\u003e\u003e\u0027follow_request_sent\u0027 AS follow_request_sent\nFROM friends_json;\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-19 18:06:43.975",
+      "dateUpdated": "2020-08-20 19:55:56.410",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -50,20 +59,29 @@
       "settings": {
         "params": {},
         "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
       },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597858101507_128434246",
       "id": "paragraph_1597857751865_888891938",
       "dateCreated": "2020-08-19 17:28:21.507",
-      "dateStarted": "2020-08-19 18:06:43.985",
-      "dateFinished": "2020-08-19 18:06:44.006",
+      "dateStarted": "2020-08-20 19:55:56.451",
+      "dateFinished": "2020-08-20 19:55:56.759",
       "status": "FINISHED"
     },
     {
       "text": "%jdbc\nDROP VIEW IF EXISTS tweets;\nCREATE VIEW tweets AS\nSELECT\n    id,\n    ts,\n    json-\u003e\u003e\u0027created_at\u0027 AS created_at,\n    json-\u003e\u003e\u0027text\u0027 AS text,\n    json-\u003e\u003e\u0027source\u0027 AS source,\n    json-\u003e\u003e\u0027lang\u0027 AS lang,\n    json-\u003e\u003e\u0027favorited\u0027 AS favorited,\n    json-\u003e\u003e\u0027retweeted\u0027 AS retweeted,\n    json-\u003e\u003e\u0027favorite_count\u0027 AS favorite_count,\n    json-\u003e\u003e\u0027retweet_count\u0027 AS retweet_count,\n    json-\u003e\u003e\u0027quoted_status_id\u0027 AS quoted_status_id,\n    json-\u003e\u003e\u0027retweeted_status_id\u0027 AS retweeted_status_id\nFROM tweets_json;\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-20 16:20:30.905",
+      "dateUpdated": "2020-08-20 19:55:59.456",
       "config": {
         "colWidth": 12.0,
         "fontSize": 9.0,
@@ -81,13 +99,22 @@
         "params": {},
         "forms": {}
       },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Query executed successfully. Affected rows : 0"
+          }
+        ]
+      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597858372641_1252966571",
       "id": "paragraph_1597858372641_1252966571",
       "dateCreated": "2020-08-19 17:32:52.641",
-      "dateStarted": "2020-08-20 16:20:30.917",
-      "dateFinished": "2020-08-20 16:20:30.979",
+      "dateStarted": "2020-08-20 19:55:59.485",
+      "dateFinished": "2020-08-20 19:55:59.666",
       "status": "FINISHED"
     },
     {

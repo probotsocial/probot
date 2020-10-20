@@ -3,7 +3,7 @@
     {
       "text": "%spark\nimport com.typesafe.config.ConfigFactory\nimport com.typesafe.config.ConfigValueFactory\nimport java.io.File\nimport java.io.PrintWriter\nimport org.apache.streams.config.ComponentConfigurator\nimport org.apache.streams.config.StreamsConfigurator\nimport scala.collection.JavaConverters._\nimport scala.collection.JavaConversions._\nimport scala.collection.mutable._\n\nval configBase \u003d ConfigFactory.parseFile(new File(\"/workdir/src/main/resources/conf/FlinkTwitterFollowingPipeline.template.conf\"))\nval config \u003d configBase.withValue(\"ENDPOINT\", ConfigValueFactory.fromAnyRef(\"followers\"))\nval configHocon \u003d config.resolve.root.render\n\nnew PrintWriter(s\"/data/CollectFollowers.conf\") { write(configHocon); close }\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-19 16:19:56.214",
+      "dateUpdated": "2020-08-20 19:37:49.931",
       "config": {
         "editorSetting": {
           "language": "scala",
@@ -21,17 +21,28 @@
         "params": {},
         "forms": {}
       },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import com.typesafe.config.ConfigFactory\nimport com.typesafe.config.ConfigValueFactory\nimport java.io.File\nimport java.io.PrintWriter\nimport org.apache.streams.config.ComponentConfigurator\nimport org.apache.streams.config.StreamsConfigurator\nimport scala.collection.JavaConverters._\nimport scala.collection.JavaConversions._\nimport scala.collection.mutable._\n\u001b[1m\u001b[34mconfigBase\u001b[0m: \u001b[1m\u001b[32mcom.typesafe.config.Config\u001b[0m \u003d Config(SimpleConfigObject({\"mode\":\"batch\",\"org\":{\"apache\":{\"streams\":{\"config\":{\"StreamsConfiguration\":{\"batchFrequencyMs\":30000,\"batchSize\":10000,\"identifier\":\"FlinkTwitterFollowingPipeline\",\"parallelism\":2,\"providerTimeoutMs\":60000,\"providerWaitMs\":60000,\"queueSize\":10000,\"shutdownCheckDelay\":30000,\"shutdownCheckInterval\":30000}},\"flink\":{\"StreamsFlinkConfiguration\":..."
+          }
+        ]
+      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597853982519_-1679568146",
       "id": "paragraph_1597704461686_1263921915",
       "dateCreated": "2020-08-19 16:19:42.519",
-      "status": "READY"
+      "dateStarted": "2020-08-20 19:37:50.009",
+      "dateFinished": "2020-08-20 19:37:56.109",
+      "status": "FINISHED"
     },
     {
       "text": "%sh\n/zeppelin/flink/bin/flink run -m jobmanager:8081 \\\n    -c org.apache.streams.examples.flink.twitter.collection.FlinkTwitterFollowingPipeline \\\n    /jars/probot-pipelines-jar-with-dependencies.jar \\\n    file:///data/CollectFollowers.conf\n",
       "user": "anonymous",
-      "dateUpdated": "2020-08-19 16:20:01.422",
+      "dateUpdated": "2020-08-20 19:38:02.863",
       "config": {
         "editorSetting": {
           "language": "sh",
@@ -48,18 +59,33 @@
       "settings": {
         "params": {},
         "forms": {}
+      },
+      "results": {
+        "code": "INCOMPLETE",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Job has been submitted with JobID 386e8edc0a16221e3ca0308aa004aa85\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Paragraph received a SIGTERM\nExitValue: 143"
+          }
+        ]
       },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597853982519_-940059307",
       "id": "paragraph_1596482264838_1019833188",
       "dateCreated": "2020-08-19 16:19:42.519",
-      "status": "READY"
+      "dateStarted": "2020-08-20 19:38:02.896",
+      "dateFinished": "2020-08-20 19:39:03.818",
+      "status": "FINISHED"
     },
     {
       "text": "%sh\ncd \"/data/followers.jsonl\"\nfor file in .part-*\ndo\n   mv \"$file\" \"$(echo $file | sed \u0027s/^.\\{1\\}//g\u0027)\"\ndone",
       "user": "anonymous",
-      "dateUpdated": "2020-08-19 16:20:07.521",
+      "dateUpdated": "2020-08-20 19:44:24.144",
       "config": {
         "editorSetting": {
           "language": "sh",
@@ -77,12 +103,18 @@
         "params": {},
         "forms": {}
       },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
       "apps": [],
       "progressUpdateIntervalMs": 500,
       "jobName": "paragraph_1597853982519_-1981956671",
       "id": "paragraph_1596482420784_-1170137378",
       "dateCreated": "2020-08-19 16:19:42.519",
-      "status": "READY"
+      "dateStarted": "2020-08-20 19:44:24.258",
+      "dateFinished": "2020-08-20 19:44:25.041",
+      "status": "FINISHED"
     },
     {
       "text": "%sh\n",

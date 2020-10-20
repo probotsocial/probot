@@ -1,10 +1,8 @@
 import React from 'react';
-import { Admin, Login, ListGuesser, ShowGuesser, Resource } from 'react-admin';
+import { Admin, Login, ShowGuesser, Resource } from 'react-admin';
 import { createMuiTheme } from '@material-ui/core/styles';
-import { useAuth0 } from "@auth0/auth0-react";
-import logo from './logo.svg';
 
-//import authProvider from './main/js/AuthProvider';
+import authProvider from './main/js/AuthProvider';
 import dataProvider from './main/js/DataProvider';
 
 import { Dashboard } from "./main/js/dashboard";
@@ -14,7 +12,11 @@ import { ProfileList } from "./main/js/profiles";
 import { OptInList } from "./main/js/optins";
 import './App.css';
 
-console.log(require('dotenv').config())
+import LoginForm from './main/js/LoginForm';
+
+const LoginPage = (props) => <Login {...props}><LoginForm /> </Login>;
+
+//console.log(require('dotenv').config())
 
 const theme = createMuiTheme({
   palette: {
@@ -22,14 +24,6 @@ const theme = createMuiTheme({
   }
 });
 
-
-const LoginButton = () => {
-  const { loginWithRedirect } = useAuth0();
-
-  return <button onClick={() => loginWithRedirect()}>Log In</button>;
-};
-
-//          authProvider={authProvider}
 const App = () => {
   return (
       <Admin
@@ -37,7 +31,8 @@ const App = () => {
           title="ProBot"
           dashboard={Dashboard}
           dataProvider={dataProvider}
-          loginPage={LoginButton}
+          authProvider={authProvider}
+          loginPage={LoginPage}
       >
           <Resource name="followers" label="Followers" list={ProfileList} show={ShowGuesser}/>
           <Resource name="friends" label="Following" list={ProfileList} show={ShowGuesser}/>
