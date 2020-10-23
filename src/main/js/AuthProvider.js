@@ -2,7 +2,7 @@ import {Auth0Client} from '@auth0/auth0-spa-js';
 
 const auth0 = new Auth0Client({
     domain: process.env.REACT_APP_AUTH0_DOMAIN || "dev-probot.us.auth0.com" ,
-    client_id: process.env.REACT_APP_AUTH0_CLIENTID || "FO0NwBs3xKa4o8a2E8mQ2PF80d4bZRn0",
+    client_id: process.env.REACT_APP_AUTH0_CLIENTID || "K6GoUSOrXgsWQguk7j6G6HXO9SzRaVXp",
     redirect_uri: window.location.origin,
     cacheLocation: 'localstorage',
     useRefreshTokens: true,
