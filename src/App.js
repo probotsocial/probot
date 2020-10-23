@@ -50,4 +50,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default withAuthenticationRequired(withAuth0(App));
