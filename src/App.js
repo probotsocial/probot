@@ -2,6 +2,7 @@ import React from 'react';
 import { Admin, ShowGuesser, Resource } from 'react-admin';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { useAuth0 } from "@auth0/auth0-react";
+import { withAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 //import logo from './logo.svg';
 
 //import authProvider from './main/js/AuthProvider';
@@ -13,6 +14,7 @@ import { PostList } from "./main/js/posts";
 import { ProfileList } from "./main/js/profiles";
 import { OptInList } from "./main/js/optins";
 import './App.css';
+
 
 //console.log(require('dotenv').config())
 
