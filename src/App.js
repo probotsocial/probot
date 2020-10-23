@@ -1,7 +1,7 @@
 import React from 'react';
-import { Admin, Login, ListGuesser, ShowGuesser, Resource } from 'react-admin';
+import { Admin, Login, ShowGuesser, Resource } from 'react-admin';
 import { createMuiTheme } from '@material-ui/core/styles';
-import logo from './logo.svg';
+//import logo from './logo.svg';
 
 import authProvider from './main/js/AuthProvider';
 import dataProvider from './main/js/DataProvider';
@@ -13,9 +13,10 @@ import { ProfileList } from "./main/js/profiles";
 import { OptInList } from "./main/js/optins";
 import './App.css';
 
-console.log(require('dotenv').config())
+//console.log(require('dotenv').config())
+import LoginForm from './main/js/LoginForm';
 
-const LoginPage = () => <Login />;
+const LoginPage = (props) => <Login {...props}><LoginForm /> </Login>;
 
 const theme = createMuiTheme({
   palette: {
@@ -31,6 +32,7 @@ const App = () => {
           dashboard={Dashboard}
           authProvider={authProvider}
           dataProvider={dataProvider}
+          loginPage={LoginPage}
       >
           <Resource name="followers" label="Followers" list={ProfileList} show={ShowGuesser}/>
           <Resource name="friends" label="Following" list={ProfileList} show={ShowGuesser}/>
