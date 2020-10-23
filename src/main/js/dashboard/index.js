@@ -4,9 +4,18 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { useAuth0 } from "@auth0/auth0-react";
 
-export const Dashboard = (props) => (
-    <Grid container item>
+
+
+export const Dashboard = (props) => {
+  const { user, isAuthenticated, isLoading } = useAuth0();
+
+  if (isLoading) {
+    return <div>Loading ...</div>;
+  }
+  console.log(user, isAuthenticated);
+    return (<Grid container item>
         <Card>
             <CardHeader>Profile Bot (aka ProBot)</CardHeader>
             <CardContent>
@@ -22,5 +31,5 @@ export const Dashboard = (props) => (
                 </Typography>
             </CardContent>
         </Card>
-    </Grid>
-);
+    </Grid>);
+}

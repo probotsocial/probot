@@ -1,8 +1,8 @@
 import React from 'react';
-import { Admin, Login, ListGuesser, ShowGuesser, Resource } from 'react-admin';
+import { Admin, ShowGuesser, Resource } from 'react-admin';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { useAuth0 } from "@auth0/auth0-react";
-import logo from './logo.svg';
+//import logo from './logo.svg';
 
 //import authProvider from './main/js/AuthProvider';
 import dataProvider from './main/js/DataProvider';
@@ -14,7 +14,7 @@ import { ProfileList } from "./main/js/profiles";
 import { OptInList } from "./main/js/optins";
 import './App.css';
 
-console.log(require('dotenv').config())
+//console.log(require('dotenv').config())
 
 const theme = createMuiTheme({
   palette: {
