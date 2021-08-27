@@ -62,7 +62,7 @@ services:
       - "jobmanager:jobmanager"
     environment:
       - "FLINK_HOME=/zeppelin/flink"
-      - "HADOOP_CONF_DIR=/zeppelin/hadoop"
+      - "HADOOP_CONF_DIR=/zeppelin/hadoop/conf"
       - "SPARK_HOME=/zeppelin/spark"
       - "SPARK_SUBMIT_OPTIONS=--jars /jars/probot-pipelines-jar-with-dependencies.jar"
     volumes:
@@ -83,10 +83,12 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        jobmanager.memory.process.size: 4000Mb
+        jobmanager.memory.process.size: 2000Mb
+        web.log.path: /opt/flink/log/output.log
     volumes:
       - ".:/workdir"
       - "./data:/data"
+      - "./src/main/resources/log4j.flink.properties:/opt/flink/conf/log4j-console.properties"
 
   taskmanager:
     image: flink:1.11.1-scala_2.11-java8
@@ -100,8 +102,10 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 4
-        taskmanager.memory.process.size: 8000Mb
+        taskmanager.numberOfTaskSlots: 8
+        taskmanager.memory.process.size: 12000Mb
+        taskmanager.log.path: /opt/flink/log/output.log
     volumes:
       - ".:/workdir"
       - "./data:/data"
+      - "./src/main/resources/log4j.flink.properties:/opt/flink/conf/log4j-console.properties"
